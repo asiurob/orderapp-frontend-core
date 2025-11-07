@@ -24,7 +24,6 @@ const GET_ALL_PLANS = gql`
         kitchens
         metrics
         isActive
-        isDeleted
       }
     }
   }
