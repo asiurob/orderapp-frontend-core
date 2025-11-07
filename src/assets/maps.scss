@@ -1,0 +1,27 @@
+@use '@angular/material' as mat;
+@use 'sass:map';
+@use 'sass:color';
+
+
+$sizes-px: (
+    10: 10px,
+    12: 12px,
+    14: 14px,
+    16: 16px,
+    18: 18px,
+    20: 20px,
+    22: 22px,
+    24: 24px,
+    26: 26px,
+    28: 28px,
+    30: 30px,
+    32: 32px,
+);
+
+$sizes-perc: (
+    10: 10%,
+    25: 25%,
+    50: 50%,
+    75: 75%,
+    100: 100%,
+);

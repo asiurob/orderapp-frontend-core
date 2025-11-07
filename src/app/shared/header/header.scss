@@ -1,0 +1,87 @@
+
+.app-header {
+  background-color: #ffffff;
+  height: 70px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant); 
+}
+
+.logo {
+  width: 38px;
+  height: 38px;
+  background-color: var(--primary);
+  border-radius: 8px;
+
+  display: flex;
+  align-items: center;     
+  justify-content: center; 
+
+  mat-icon {
+    color: var(--mat-sys-on-primary);
+    font-size: 22px;
+  }
+}
+
+.app-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  line-height: 1.2;
+}
+
+.app-subtitle {
+  font-size: 0.8rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.status-indicator {
+  --status-color: var(--mat-sys-on-surface);
+  background-color: var(--mat-sys-surface-container-high);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  transition: all 0.3s ease;
+
+  mat-icon {
+    color: var(--status-color);
+  }
+
+ &.active {
+    --status-color: var(--success);
+  }
+
+  &.inactive {
+    --status-color: var(--warn);
+  }
+}
+
+.user-profile {
+  &:hover {
+    background-color: transparent;
+  }
+}
+
+::ng-deep .mat-badge-content {
+  background-color: var(--warn);
+  color: var(--mat-sys-on-error);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+::ng-deep .mat-mdc-menu-panel{
+  --mat-menu-container-color: var(--mat-sys-surface);
+  border-radius: 8px !important;
+  box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12) !important;
+}
+
+::ng-deep .mat-mdc-menu-item {
+  &:hover:not([disabled]),
+  &.mdc-list-item--selected,
+  &:focus:not(.mat-mdc-focus-indicator) {
+    background-color: var(--background) !important;
+
+    .mat-icon, span {
+      color: var(--primary) !important;
+    }
+  }
+}

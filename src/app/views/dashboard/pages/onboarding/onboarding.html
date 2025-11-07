@@ -1,0 +1,185 @@
+<header class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="page-title">Registro de Nuevo Cliente</h1>
+</header>
+
+    <mat-stepper linear #stepper>
+    <mat-step [stepControl]="step1Group">
+    <form [formGroup]="step1Group">
+        <ng-template matStepLabel>Datos Generales del Cliente</ng-template>
+
+        <div class="row mt-3">
+        <div class="col-12">
+            <label class="form-label d-block mb-2">Tipo de Persona</label>
+            <mat-radio-group formControlName="personType">
+            <mat-radio-button value="fisica">Persona Física</mat-radio-button>
+            <mat-radio-button value="moral" class="ms-4">Persona Moral</mat-radio-button>
+            </mat-radio-group>
+        </div>
+        </div>
+
+        <div class="row mt-3">
+        <div class="col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nombre completo del cliente</mat-label>
+            <input matInput formControlName="fullName">
+            <mat-error>Este campo es requerido.</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Teléfono de contacto</mat-label>
+            <input matInput formControlName="phone">
+            <mat-error>Este campo es requerido.</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Correo electrónico</mat-label>
+            <input matInput type="email" formControlName="email">
+            <mat-error>Correo inválido o requerido.</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+            <mat-label>RFC</mat-label>
+            <input matInput formControlName="rfc">
+            <mat-error>Este campo es requerido.</mat-error>
+            </mat-form-field>
+        </div>
+        
+        <div class="col-md-4" *ngIf="personType() === 'moral'">
+            <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Representante Legal</mat-label>
+            <input matInput formControlName="legalRepresentative">
+            <mat-error>Requerido para Persona Moral.</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-md-4" *ngIf="personType() === 'moral'">
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Cédula de Identificación Fiscal</mat-label>
+                <input matInput formControlName="taxId">
+            </mat-form-field>
+        </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12"><h5 class="section-title">Información Bancaria</h5></div>
+            <div class="col-md-6">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Institución Bancaria</mat-label>
+                    <input matInput formControlName="bankName">
+                    <mat-error>Este campo es requerido.</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-md-6">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Clabe bancaria (18 dígitos)</mat-label>
+                    <input matInput formControlName="bankClabe">
+                    <mat-error>Este campo es requerido.</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="stepper-actions">
+        <button mat-flat-button color="primary" matStepperNext>Siguiente</button>
+        </div>
+    </form>
+    </mat-step>
+
+  <mat-step [stepControl]="step2Group">
+    <form [formGroup]="step2Group">
+      <ng-template matStepLabel>Datos del Restaurante</ng-template>
+      <div class="row mt-3">
+        <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Nombre comercial</mat-label>
+                <input matInput formControlName="tradeName">
+            </mat-form-field>
+        </div>
+        <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Razón social (si aplica)</mat-label>
+                <input matInput formControlName="businessName">
+            </mat-form-field>
+        </div>
+      </div>
+      
+      <div formArrayName="branches">
+        <div *ngFor="let branch of branches.controls; let i=index" [formGroupName]="i" class="branch-container">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5>Sucursal {{ i + 1 }}</h5>
+            <button type="button" mat-icon-button color="warn" *ngIf="branches.length > 1" (click)="removeBranch(i)">
+                <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+          <div class="row">
+            <div class="col-md-8"><mat-form-field appearance="outline" class="w-100"><mat-label>Calle</mat-label><input matInput formControlName="street"></mat-form-field></div>
+            <div class="col-md-4"><mat-form-field appearance="outline" class="w-100"><mat-label>No. Ext.</mat-label><input matInput formControlName="extNum"></mat-form-field></div>
+            <div class="col-md-4"><mat-form-field appearance="outline" class="w-100"><mat-label>No. Int.</mat-label><input matInput formControlName="intNum"></mat-form-field></div>
+            <div class="col-md-4"><mat-form-field appearance="outline" class="w-100"><mat-label>Colonia</mat-label><input matInput formControlName="colony"></mat-form-field></div>
+            <div class="col-md-4"><mat-form-field appearance="outline" class="w-100"><mat-label>C.P.</mat-label><input matInput formControlName="zipCode"></mat-form-field></div>
+            <div class="col-md-6"><mat-form-field appearance="outline" class="w-100"><mat-label>Municipio</mat-label><input matInput formControlName="municipality"></mat-form-field></div>
+            <div class="col-md-6"><mat-form-field appearance="outline" class="w-100"><mat-label>Estado</mat-label><input matInput formControlName="state"></mat-form-field></div>
+            <div class="col-md-6"><mat-form-field appearance="outline" class="w-100"><mat-label>Contacto</mat-label><input matInput formControlName="contact"></mat-form-field></div>
+            <div class="col-md-6"><mat-form-field appearance="outline" class="w-100"><mat-label>Teléfono de Contacto</mat-label><input matInput formControlName="phone"></mat-form-field></div>
+          </div>
+        </div>
+      </div>
+      <button type="button" mat-stroked-button color="primary" (click)="addBranch()">+ Añadir otra sucursal</button>
+      
+      <div class="stepper-actions">
+        <button mat-button matStepperPrevious>Anterior</button>
+        <button mat-flat-button color="primary" matStepperNext>Siguiente</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="step3Group">
+    <form [formGroup]="step3Group">
+        <ng-template matStepLabel>Carga de Documentos</ng-template>
+        
+        <div class="mt-3" *ngIf="personType() === 'fisica'">
+            <h4>Documentos Requeridos (Persona Física)</h4>
+            <ul class="doc-list">
+                <li *ngFor="let doc of docsFisica">
+                    <span>{{ doc }}</span>
+                    <button type="button" mat-stroked-button (click)="fileInput.click()">
+                        <mat-icon>upload_file</mat-icon> Cargar Archivo
+                    </button>
+                    <input hidden type="file" #fileInput (change)="onFileSelected($event, doc)">
+                </li>
+            </ul>
+        </div>
+
+        <div class="mt-3" *ngIf="personType() === 'moral'">
+            <h4>Documentos Requeridos (Persona Moral)</h4>
+            <ul class="doc-list">
+                <li *ngFor="let doc of docsMoral">
+                    <span>{{ doc }}</span>
+                    <button type="button" mat-stroked-button (click)="fileInput.click()">
+                        <mat-icon>upload_file</mat-icon> Cargar Archivo
+                    </button>
+                    <input hidden type="file" #fileInput (change)="onFileSelected($event, doc)">
+                </li>
+            </ul>
+        </div>
+        
+        <div class="stepper-actions">
+            <button mat-button matStepperPrevious>Anterior</button>
+            <button mat-flat-button color="primary" matStepperNext>Siguiente</button>
+        </div>
+    </form>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>FENICIA</ng-template>
+    <div class="placeholder-step">
+        <h3 class="placeholder-title">Configuración de FENICIA</h3>
+        <p class="text-muted">Esta sección se encuentra en desarrollo.</p>
+    </div>
+    <div class="stepper-actions">
+      <button mat-button matStepperPrevious>Anterior</button>
+      <button mat-flat-button color="primary" (click)="submitForm()">Finalizar Registro</button>
+    </div>
+  </mat-step>
+</mat-stepper>

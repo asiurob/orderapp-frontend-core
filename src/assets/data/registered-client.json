@@ -1,0 +1,35 @@
+[
+  {
+    "id": "reg001",
+    "restaurantName": "El Buen Sabor",
+    "branchCount": 1,
+    "clientName": "María González",
+    "email": "maria@elbuensabor.mx",
+    "phone": "5512345678",
+    "personType": "fisica",
+    "uploadedDocuments": ["INE", "CIF", "Comprobante Domicilio", "Estado Cuenta", "KYC"],
+    "status": "Completo"
+  },
+  {
+    "id": "reg002",
+    "restaurantName": "Pizzería Don Luigi",
+    "branchCount": 3,
+    "clientName": "Carlos Rossi (Rep. Legal)",
+    "email": "carlos@donluigi.mx",
+    "phone": "5598765432",
+    "personType": "moral",
+    "uploadedDocuments": ["Acta Constitutiva", "RPC", "Poder Legal", "ID Rep Legal", "CIF Empresa", "Comprobante Domicilio"],
+    "status": "Pendiente"
+  },
+  {
+    "id": "reg003",
+    "restaurantName": "Café Central",
+    "branchCount": 1,
+    "clientName": "Ana Martínez",
+    "email": "ana@cafecentral.mx",
+    "phone": "5555551212",
+    "personType": "fisica",
+    "uploadedDocuments": ["INE", "CIF", "Comprobante Domicilio", "Estado Cuenta"],
+    "status": "En Revisión"
+  }
+]

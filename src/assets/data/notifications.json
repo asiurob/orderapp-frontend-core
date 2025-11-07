@@ -1,0 +1,20 @@
+[
+  {
+    "id": "notif_001",
+    "message": "Hay una nueva factura disponible.",
+    "read": false,
+    "timestamp": "2025-09-20T10:30:00Z"
+  },
+  {
+    "id": "notif_002",
+    "message": "El cliente 'Café Central' ha confirmado su pedido.",
+    "read": true,
+    "timestamp": "2025-09-20T11:00:00Z"
+  },
+  {
+    "id": "notif_003",
+    "message": "Tienes una demostración agendada para mañana.",
+    "read": true,
+    "timestamp": "2025-09-19T15:00:00Z"
+  }
+]

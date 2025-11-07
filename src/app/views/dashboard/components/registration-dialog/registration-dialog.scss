@@ -1,0 +1,115 @@
+// Importante para el espaciado y layout interno
+@use '@angular/material' as mat; // Si necesitas funciones de theming
+
+:host ::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  width: 90vw !important; 
+  max-width: 1400px !important; 
+  height: 85vh !important;
+  border-radius: 12px !important;
+  padding: 0 !important; 
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden;
+}
+
+mat-dialog-content {
+  padding: 1.5rem; 
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+// Título del Diálogo
+h2[mat-dialog-title] {
+  padding: 1.25rem 1.5rem;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  background-color: #fafafa; // Fondo sutil
+  border-bottom: 1px solid var(--outline-variant); // Separador
+}
+
+// Acciones (botones Cancelar/Finalizar)
+mat-dialog-actions {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--outline-variant); // Separador
+  background-color: #fafafa; // Fondo sutil
+}
+
+// --- Estilos Específicos del Stepper y Formularios ---
+
+// Ajuste general para los form fields
+mat-form-field {
+    width: 100%;
+    margin-bottom: 0.75rem;
+}
+
+// Botones dentro del stepper
+.stepper-actions {
+    margin-top: 1.5rem;
+    text-align: right;
+}
+
+.branch-container {
+    padding: 1.5rem;
+    border: 1px solid var(--outline-variant); // Borde sutil
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    background-color: var(--surface); // Fondo blanco/gris muy claro
+    
+    h5 { // Estilo para el título "Sucursal X"
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--on-surface); // Color de texto principal
+        margin-bottom: 1rem;
+    }
+}
+
+// Estilo para el botón "+ Añadir otra sucursal"
+button[mat-stroked-button] { // Aplica a todos los botones stroked
+    margin-top: 0.5rem; // Separa un poco del último contenedor
+}
+
+// Lista de documentos
+.doc-list {
+    list-style: none;
+    padding: 0;
+    li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0; // Menos padding vertical
+        border-bottom: 1px solid #eee;
+        gap: 1rem; // Espacio entre texto y botón
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        span {
+            flex-grow: 1; // Permite que el texto ocupe espacio
+            font-size: 0.9rem;
+        }
+        button {
+            flex-shrink: 0; // Evita que el botón se encoja
+        }
+    }
+}
+
+// Placeholder del último paso
+.placeholder-step {
+    padding: 2rem;
+    text-align: center;
+    color: var(--on-surface-variant);
+}
+
+// Títulos de sección dentro de los formularios
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--outline-variant);
+  padding-bottom: 0.5rem;
+}

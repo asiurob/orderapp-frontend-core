@@ -1,0 +1,176 @@
+:host {
+  display: block;
+  background-color: var(--subtle-gray-background);
+  padding: 2rem;
+  min-height: 100%;
+}
+
+.page-title {
+  font-weight: 700;
+  font-size: 1.75rem;
+}
+
+.actions {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+
+  .search-bar {
+    width: 350px;
+  }
+
+  .action-button {
+    height: 44px;
+    padding: 0 1.25rem;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.mat-mdc-table {
+  background-color: transparent;
+
+  .mat-mdc-header-cell {
+    background-color: var(--table-header-background);
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom-width: 0;
+  }
+
+  .mat-mdc-row {
+    transition: background-color 0.2s ease-in-out;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--outline-variant);
+
+    &:hover {
+      background-color: var(--row-hover-background);
+    }
+
+    &:last-child {
+      border-bottom-width: 0;
+    }
+  }
+
+  .mat-mdc-cell {
+    font-size: 0.9rem;
+    border-bottom-width: 0;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .mat-mdc-icon-button {
+    width: 32px;
+    height: 32px;
+    .mat-icon {
+      font-size: 20px;
+    }
+  }
+}
+mat-progress-bar {
+  height: 6px !important;
+  border-radius: 3px;
+  margin-bottom: 4px;
+  // Color de fondo de la barra vacía
+  --mdc-linear-progress-track-color: var(--health-bar-bg); 
+
+  // Quitamos cualquier color por defecto que pueda aplicar 'mat-primary' etc.
+  --mdc-linear-progress-active-indicator-color: transparent !important; 
+
+  // Definimos el color correcto basado en la clase del HOST
+  &.progress-high {
+      --mdc-linear-progress-active-indicator-color: var(--success) !important; // Verde
+  }
+  &.progress-medium {
+      --mdc-linear-progress-active-indicator-color: var(--warning) !important; // Amarillo/Ámbar
+  }
+  &.progress-low {
+      --mdc-linear-progress-active-indicator-color: var(--warn) !important; // Rojo
+  }
+}
+
+.mat-mdc-chip-action-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+:host ::ng-deep {
+
+  mat-chip-option {
+    &.mat-mdc-chip {
+      --mdc-chip-outline-width: 0px;
+      background-color: transparent !important; 
+    }
+
+    .mat-mdc-chip-avatar, 
+    .mat-icon, 
+    .mdc-evolution-chip__icon--primary {
+      display: none !important;
+    }
+
+    .mdc-evolution-chip__action {
+        background-color: transparent !important; 
+        .mdc-evolution-chip__text-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    }
+
+    &.mat-primary { 
+      background-color: var(--success-container) !important; 
+      .mdc-evolution-chip__action .mdc-evolution-chip__text-label {
+        color: var(--status-active-color) !important; 
+      }
+    }
+
+    &.mat-warn { 
+      background-color: var(--warn-container) !important;
+      .mdc-evolution-chip__action .mdc-evolution-chip__text-label {
+        color: var(--status-hot-color) !important; 
+      }
+    }
+
+    &.mat-accent { 
+      background-color: var(--info-container) !important; 
+      .mdc-evolution-chip__action .mdc-evolution-chip__text-label {
+        color: var(--info) !important; 
+      }
+    }
+  }
+}
+
+.action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 1rem;
+
+  &.ok {
+    background-color: var(--success);
+  }
+
+  &.pending {
+    background-color: var(--warn);
+  }
+}
+
+.mat-mdc-no-data-row td {
+  padding: 2rem;
+  color: var(--mat-sys-on-surface-variant);
+}

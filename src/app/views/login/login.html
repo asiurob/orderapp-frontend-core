@@ -1,0 +1,29 @@
+<div class="login-wrapper container-fluid">
+  <div class="row login-panel shadow-lg">
+
+    <div class="col-lg-6 branding-section d-none d-lg-flex flex-column justify-content-center align-items-center">
+      <div class="logo mb-4"></div>
+      <h1 class="text-white"><b>Orderapp</b> Admin</h1>
+      <p class="text-white-50">Tu suite de gestión de clientes.</p>
+    </div>
+
+    <div class="col-lg-6 form-section d-flex flex-column justify-content-center text-center p-5">
+      
+      <h2 class="form-title mb-3">Bienvenido de Nuevo</h2>
+      <p class="form-subtitle mb-5">
+        Haz clic en el botón para continuar de forma segura a tu panel de administración.
+      </p>
+
+      <button mat-flat-button class="auth-button w-100 py-3" (click)="login()">
+        <span>Iniciar Sesión</span>
+      </button>
+
+      <div class="text-center mt-5 footer-text">
+        <p class="text-muted">
+          Al continuar, aceptas nuestros <a href="#">Términos de Servicio</a>.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

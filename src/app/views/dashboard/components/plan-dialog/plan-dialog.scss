@@ -1,0 +1,51 @@
+h2[mat-dialog-title] {
+  padding: 1.25rem 1.5rem;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  background-color: #fafafa; 
+  border-bottom: 1px solid var(--outline-variant); 
+}
+
+mat-dialog-content {
+  padding: 1.5rem; 
+  max-height: 70vh; 
+  overflow-y: auto;
+}
+
+mat-dialog-actions {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--outline-variant); 
+  background-color: #fafafa; 
+}
+
+.section-title {
+  font-size: 0.75rem; 
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant); 
+  margin-bottom: 1rem;
+  text-transform: uppercase; 
+  letter-spacing: 0.8px;
+}
+
+.toggles-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1rem 0;
+}
+
+mat-form-field {
+    margin-bottom: 0.75rem;
+}
+
+.limites-row {
+  
+  &.mt-3 {
+    margin-top: 0.5rem !important;
+  }
+
+  .section-title {
+    margin-bottom: 0.5rem;
+  }
+}

@@ -1,0 +1,104 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@use './assets/maps' as *;
+@use './assets/assets_theme-colors' as theme;
+@use "bootstrap/scss/bootstrap";
+
+html {
+  @include mat.theme( 
+    (
+      color: theme.$primary-palette,
+      typography: Roboto,
+      density: 0
+      )
+  );
+}
+
+html, body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: var(--mat-sys-background);
+  color-scheme: light;
+}
+
+.primary-txt {
+  color: var(--mat-sys-primary)
+}
+
+.accent-txt {
+  color: var(--mat-sys-accent)
+}
+
+.secondary-txt {
+  color: var(--mat-sys-secondary)
+}
+
+@mixin generate-font-size-classes {
+  @each $name, $size in $sizes-px {
+    .txt-size-#{$name} {
+      font-size: $size;
+    }
+  }
+}
+
+@mixin generate-percent-size-classes {
+  @each $name, $size in $sizes-perc {
+    .perc-size-#{$name} {
+      width: $size;
+    }
+  }
+}
+
+@include generate-percent-size-classes;
+@include generate-font-size-classes;
+
+// el fondo de los selects
+.mat-mdc-select-panel.app-prospect-status-panel {
+  --mat-select-panel-background-color: var(--mat-sys-surface);
+}
+
+.registration-dialog-container .mdc-dialog__surface {
+  border-radius: 12px !important;
+  padding: 0 !important; 
+  display: flex !important; // Asegura flexbox
+  flex-direction: column !important; // Asegura dirección vertical
+  overflow: hidden !important; // Evita doble scrollbar
+}
+
+.registration-dialog-container mat-dialog-content {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+:root {
+  // --- Colores de Marca (extraídos de tu tema) ---
+  --primary: #{map.get(theme.$primary-palette, 70)};
+  --primary-container: #{map.get(theme.$primary-palette, 90)};
+  --warn: #{map.get(theme.$error-palette, 60)};
+  --warn-container: #{map.get(theme.$error-palette, 95)};
+  --background: #{map.get(theme.$primary-palette, 98)};
+  --subtle-gray-background: #{map.get(theme.$secondary-palette, 95)};
+  --row-hover-background: #{map.get(theme.$secondary-palette, 98)};
+  --table-header-background: #{map.get(theme.$secondary-palette, 98)};
+
+  //  Colores personalizados
+  --success: #43a047;
+  --success-container: #e8f5e9;
+  --info: #1e88e5;
+  --info-container: #e3f2fd;
+  --warning: #ffc107;
+  --warning-container: #fff8e1;
+  --highlight: #8e24aa;
+  --highlight-container: #f3e5f5;
+
+  //  Variables para Badges de Estado
+  --status-hot-color: #{map.get(theme.$error-palette, 40)};
+  --status-warm-color: #{map.get(theme.$primary-palette, 50)};
+  --status-active-color: #2e7d32;
+  --status-risk-color: #{map.get(theme.$primary-palette, 60)};
+  --badge-text-color: #{map.get(theme.$secondary-palette, 40)};
+
+  // Variables para la Barra de Progreso
+  --health-bar-bg: #{map.get(theme.$secondary-palette, 90)};
+}

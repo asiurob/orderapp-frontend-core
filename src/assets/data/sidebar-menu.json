@@ -1,0 +1,20 @@
+[
+  {
+    "id": "registered_clients",
+    "label": "Clientes Registrados",
+    "icon": "how_to_reg",
+    "routerLink": "customers"
+  },
+  {
+    "id": "plan",
+    "label": "Plan",
+    "icon": "insights",
+    "routerLink": "plans"
+  },
+  {
+    "id": "registered_clients",
+    "label": "Api Docs",
+    "icon": "how_to_reg",
+    "routerLink": "api-docs"
+  }
+]

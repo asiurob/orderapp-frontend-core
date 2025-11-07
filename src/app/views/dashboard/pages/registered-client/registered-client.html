@@ -1,0 +1,83 @@
+<header class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="page-title">Clientes Registrados</h1>
+  <div class="actions d-flex align-items-center gap-3">
+    <mat-form-field appearance="outline" class="search-bar pt-3">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Buscar por restaurante, cliente o email..." (keyup)="onSearch($event)">
+    </mat-form-field>
+    <button mat-flat-button color="primary" class="action-button" (click)="startOnboarding()">
+      <mat-icon>add</mat-icon>
+      Registrar Cliente
+    </button>
+  </div>
+</header>
+
+<div class="table-container bg-white rounded-3 shadow-sm overflow-hidden"> 
+  <table mat-table [dataSource]="dataSource">
+
+    <ng-container matColumnDef="restaurant">
+      <th mat-header-cell *matHeaderCellDef> Restaurante </th>
+      <td mat-cell *matCellDef="let client"> {{client.restaurantName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="branchCount">
+      <th mat-header-cell *matHeaderCellDef> # Sucursales </th>
+      <td mat-cell *matCellDef="let client"> {{client.branchCount}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="client">
+      <th mat-header-cell *matHeaderCellDef> Cliente </th>
+      <td mat-cell *matCellDef="let client"> 
+        <span class="fw-semibold">{{client.clientName}}</span> 
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="emailPhone">
+      <th mat-header-cell *matHeaderCellDef> E-mail / Teléfono </th>
+      <td mat-cell *matCellDef="let client">
+        <div>{{client.email}}</div>
+        <div class="text-muted small">{{client.phone}}</div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="docProgress">
+      <th mat-header-cell *matHeaderCellDef> Documentos (%) </th>
+      <td mat-cell *matCellDef="let client"> <mat-progress-bar 
+            mode="determinate" 
+            [value]="client.documentProgress" [ngClass]="getProgressClass(client)"> </mat-progress-bar>
+        <span class="small">{{client.documentProgress}}%</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Estado </th>
+        <td mat-cell *matCellDef="let client">
+            <mat-chip-option [color]="client.status === 'Completo' ? 'primary' : (client.status === 'Pendiente' ? 'warn' : 'accent')" selected disabled>
+                {{ client.status }}
+            </mat-chip-option>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="text-end"> Acciones </th>
+      <td mat-cell *matCellDef="let client" class="text-end action-cell">
+        <div class="status-indicator" [ngClass]="{'ok': client.status === 'Completo', 'pending': client.status !== 'Completo'}"></div>
+        <button mat-icon-button (click)="editClient(client)" matTooltip="Editar registro">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+     <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" [colSpan]="displayedColumns.length">
+          No se encontraron clientes que coincidan con la búsqueda.
+        </td>
+      </tr>
+  </table>
+
+  <mat-paginator class="p-2" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Selecciona página de clientes">
+  </mat-paginator>
+</div>

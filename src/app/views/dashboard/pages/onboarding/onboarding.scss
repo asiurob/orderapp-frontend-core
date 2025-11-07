@@ -1,0 +1,39 @@
+:host {
+  display: block;
+  background-color: var(--subtle-gray-background);
+  padding: 2rem;
+  min-height: 100%;
+}
+.page-title {
+  font-weight: 700;
+  font-size: 1.75rem;
+}
+mat-form-field {
+    width: 100%;
+}
+.stepper-actions {
+    margin-top: 1.5rem;
+    text-align: right;
+}
+.branch-container {
+    padding: 1.5rem;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+.doc-list {
+    list-style: none;
+    padding: 0;
+    li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+}
+
+.form-label {
+    font-size: 0.75em;
+    color: rgba(0, 0, 0, 0.6);
+}

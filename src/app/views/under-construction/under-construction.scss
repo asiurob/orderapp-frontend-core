@@ -1,0 +1,16 @@
+.center-vh {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;      
+  user-select: none;     
+}
+
+.img-under {
+  width: 60vw;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}

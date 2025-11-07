@@ -1,0 +1,96 @@
+<header class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="page-title">Planes de Pago</h1>
+  <div class="actions d-flex align-items-baseline gap-3">
+    <mat-form-field appearance="outline" class="search-bar">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Buscar plan..." (keyup)="onSearch($event)">
+    </mat-form-field>
+    <button mat-flat-button color="primary" class="action-button" (click)="openPlanDialog()">
+      <mat-icon>add</mat-icon>
+      Nuevo Plan
+    </button>
+  </div>
+</header>
+
+<!-- Cuadrícula de Planes -->
+<div class="row g-4">
+  <div class="col-12 col-sm-6 col-lg-4 col-xxl-3" *ngFor="let plan of plans()">
+    
+    <!-- Usamos h-100 de Bootstrap para que todas las tarjetas tengan la misma altura -->
+    <mat-card class="plan-card h-100">
+      <mat-card-header>
+        <mat-card-title>{{ plan.planName }}</mat-card-title>
+        <mat-card-subtitle>{{ plan.description }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Sección de Precio -->
+      <div class="price-section">
+        
+        <ng-container *ngIf="plan.fixedCost > 0; else onlyPercent">
+            <span class="price-cost">${{ plan.fixedCost | number:'1.0-0' }}</span>
+            <span class="price-period">/mes</span>
+            
+            <div class="price-tx-subtitle" *ngIf="plan.percentPerTransaction > 0">
+              + {{ plan.percentPerTransaction }}% por transacción
+            </div>
+        </ng-container>
+
+        <ng-template #onlyPercent>
+            <span class="price-cost">{{ plan.percentPerTransaction }}%</span>
+            <span class="price-period">por transacción</span>
+        </ng-template>
+
+      </div>
+
+        <mat-divider class="my-3"></mat-divider>
+
+        <!-- Lista de Características Principales -->
+        <mat-list dense>
+          <mat-list-item>
+            <mat-icon matListItemIcon color="primary">group</mat-icon>
+            <span matListItemTitle>{{ formatLimit(plan.operativeUsers) }} Usuarios</span>
+          </mat-list-item>
+          <mat-list-item>
+            <mat-icon matListItemIcon color="primary">store</mat-icon>
+            <span matListItemTitle>{{ formatLimit(plan.locations) }} Sucursales</span>
+          </mat-list-item>
+          <mat-list-item>
+            <mat-icon matListItemIcon color="primary">restaurant</mat-icon>
+            <span matListItemTitle>{{ formatLimit(plan.tables) }} Mesas</span>
+          </mat-list-item>
+          <mat-list-item>
+            <mat-icon matListItemIcon color="primary">menu_book</mat-icon>
+            <span matListItemTitle>{{ formatLimit(plan.products) }} Productos</span>
+          </mat-list-item>
+          <mat-list-item *ngIf="plan.metrics">
+            <mat-icon matListItemIcon color="primary">analytics</mat-icon>
+            <span matListItemTitle>Incluye Métricas</span>
+          </mat-list-item>
+        </mat-list>
+
+        <!-- Chip de Estado -->
+        <mat-chip-listbox class="mt-3">
+            <mat-chip-option [color]="plan.isPublic ? 'primary' : 'accent'" selected disabled>
+              {{ plan.isPublic ? 'Público' : 'Privado' }}
+            </mat-chip-option>
+            <mat-chip-option [color]="plan.isActive ? 'primary' : 'warn'" selected disabled>
+                {{ plan.isActive ? 'Activo' : 'Inactivo' }}
+            </mat-chip-option>
+        </mat-chip-listbox>
+        
+      </mat-card-content>
+
+      <!-- Acciones de la Tarjeta -->
+      <mat-card-actions class="card-actions">
+        <button mat-icon-button (click)="openPlanDialog(plan)" matTooltip="Editar Plan">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="viewPlanDialog(plan)" matTooltip="Ver Detalles">
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+  </div>
+</div>

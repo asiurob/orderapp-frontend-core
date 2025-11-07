@@ -1,0 +1,112 @@
+[
+  {
+    "id": "reg001",
+    "clientData": {
+      "fullName": "María González",
+      "phone": "5512345678",
+      "email": "maria@elbuensabor.mx",
+      "legalRepresentative": "",
+      "personType": "fisica",
+      "rfc": "GOMM800101ABC",
+      "taxId": "",
+      "bankClabe": "112233445566778899",
+      "bankName": "Banco Nacional"
+    },
+    "restaurantData": {
+      "tradeName": "El Buen Sabor",
+      "businessName": "",
+      "branches": [
+        {
+          "street": "Calle Falsa",
+          "extNum": "123",
+          "intNum": "",
+          "colony": "Centro",
+          "municipality": "Ciudad Central",
+          "state": "Estado Central",
+          "zipCode": "12345",
+          "contact": "María González",
+          "phone": "5512345678"
+        }
+      ]
+    },
+    "documentProgress": 100,
+    "status": "Completo"
+  },
+  {
+    "id": "reg002",
+    "clientData": {
+      "fullName": "Carlos Rossi (Rep. Legal)",
+      "phone": "5598765432",
+      "email": "carlos@donluigi.mx",
+      "legalRepresentative": "Carlos Rossi",
+      "personType": "moral",
+      "rfc": "DOLC850101XYZ",
+      "taxId": "CIF123456",
+      "bankClabe": "012345678901234567",
+      "bankName": "Banco Ejemplo"
+    },
+    "restaurantData": {
+      "tradeName": "Pizzería Don Luigi",
+      "businessName": "Pizzería Don Luigi SA de CV",
+      "branches": [
+        {
+          "street": "Av. Principal",
+          "extNum": "123",
+          "intNum": "",
+          "colony": "Centro",
+          "municipality": "Ciudad Central",
+          "state": "Estado Central",
+          "zipCode": "12345",
+          "contact": "Gerente",
+          "phone": "5511223344"
+        },
+        {
+          "street": "Calle Secundaria",
+          "extNum": "456",
+          "intNum": "Local B",
+          "colony": "Zona Norte",
+          "municipality": "Ciudad Central",
+          "state": "Estado Central",
+          "zipCode": "54321",
+          "contact": "Encargado",
+          "phone": "5544332211"
+        }
+      ]
+    },
+    "documentProgress": 75,
+    "status": "Pendiente"
+  },
+  {
+    "id": "reg003",
+    "clientData": {
+      "fullName": "Ana Martínez",
+      "phone": "5555551212",
+      "email": "ana@cafecentral.mx",
+      "legalRepresentative": "",
+      "personType": "fisica",
+      "rfc": "MAFA750101DEF",
+      "taxId": "",
+      "bankClabe": "998877665544332211",
+      "bankName": "Banco del Sur"
+    },
+    "restaurantData": {
+      "tradeName": "Café Central",
+      "businessName": "",
+      "branches": [
+        {
+          "street": "Plaza Mayor",
+          "extNum": "10",
+          "intNum": "",
+          "colony": "Histórico",
+          "municipality": "Ciudad Central",
+          "state": "Estado Central",
+          "zipCode": "11111",
+          "contact": "Ana Martínez",
+          "phone": "5555551212"
+        }
+      ]
+    },
+    "documentProgress": 90,
+    "status": "En Revisión"
+  }
+]

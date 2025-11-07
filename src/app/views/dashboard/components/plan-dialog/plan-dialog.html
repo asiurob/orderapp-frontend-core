@@ -1,0 +1,193 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+
+<mat-dialog-content class="dialog-content-wrapper">
+  <form [formGroup]="planForm" id="plan-form" (ngSubmit)="onSave()">
+    
+    <div class="row mx-0">
+      
+      <div class="col-md-7">
+        <h3 class="section-title">Información Principal</h3>
+        
+        <div class="row mx-0"> <div class="col-12">
+            <mat-form-field 
+              appearance="outline" 
+              class="w-100"
+              subscriptSizing="dynamic"> 
+              
+              <mat-label>Nombre del Plan</mat-label>
+              <input matInput formControlName="planName">
+              <mat-error>Requerido</mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="col-12">
+            <mat-form-field 
+              appearance="outline" 
+              class="w-100" 
+              subscriptSizing="dynamic"> 
+              
+              <mat-label>Descripción</mat-label>
+              <textarea matInput formControlName="description" rows="3"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 mb-3">
+            <label class="section-title" style="display: block; margin-bottom: 0.25rem;">
+              Tipo de Cobro
+            </label>
+            
+            <mat-radio-group 
+              formControlName="pricingType" 
+              aria-label="Tipo de Cobro" 
+              class="d-flex gap-4"> 
+                
+                <mat-radio-button value="fijo" color="primary" class="flex-shrink-0">
+                  Costo Fijo
+                </mat-radio-button>
+                
+                <mat-radio-button value="porcentaje" color="primary" class="flex-shrink-0">
+                  Por Comisión
+                </mat-radio-button>
+
+            </mat-radio-group>
+          </div>
+          <div class="col-6">
+            <mat-form-field 
+              appearance="outline" 
+              class="w-100" 
+              subscriptSizing="dynamic"> 
+              
+              <mat-label>Costo Fijo (MXN)</mat-label>
+              <input matInput type="number" formControlName="fixedCost">
+              <mat-error>Requerido</mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="col-6">
+            <mat-form-field 
+              appearance="outline" 
+              class="w-100" 
+              subscriptSizing="dynamic"> 
+              
+              <mat-label>Comisión (%)</mat-label>
+              <input matInput type="number" formControlName="percentPerTransaction">
+              <mat-error>Requerido</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-5">
+        <h3 class="section-title">Configuración y Estado</h3>
+        <div class="toggles-container">
+          <mat-slide-toggle formControlName="isPublic" color="primary">
+            Visible al público
+          </mat-slide-toggle>
+          <mat-slide-toggle formControlName="metrics" color="primary">
+            Incluye Métricas
+          </mat-slide-toggle>
+          <mat-slide-toggle formControlName="isActive" color="primary">
+            Plan Activo
+          </mat-slide-toggle>
+        </div>
+      </div>
+    </div> <div class="row mt-3 limites-row mx-0"> 
+      
+      <div class="col-12">
+        <h3 class="section-title">Límites (usar -1 para Ilimitado)</h3>
+      </div>
+      
+      <div class="col-md-4 col-6"> <mat-form-field 
+          appearance="outline" 
+          class="w-100" 
+          subscriptSizing="dynamic"> 
+          
+          <mat-label>Usuarios</mat-label>
+          <input matInput type="number" formControlName="operativeUsers">
+        </mat-form-field>
+      </div>
+      
+      <div class="col-md-4 col-6"> <mat-form-field 
+          appearance="outline" 
+          class="w-100" 
+          subscriptSizing="dynamic"> 
+          
+          <mat-label>Sucursales</mat-label>
+          <input matInput type="number" formControlName="locations">
+        </mat-form-field>
+      </div>
+      
+      <div class="col-md-4 col-6"> <mat-form-field 
+          appearance="outline" 
+          class="w-100" 
+          subscriptSizing="dynamic"> 
+          
+          <mat-label>Mesas</mat-label>
+          <input matInput type="number" formControlName="tables">
+        </mat-form-field>
+      </div>
+      
+      <div class="col-md-4 col-6"> <mat-form-field 
+          appearance="outline" 
+          class="w-100" 
+          subscriptSizing="dynamic"> 
+          
+          <mat-label>Productos</mat-label>
+          <input matInput type="number" formControlName="products">
+        </mat-form-field>
+      </div>
+      
+      <div class="col-md-4 col-6"> <mat-form-field 
+          appearance="outline" 
+          class="w-100" 
+          subscriptSizing="dynamic"> 
+          
+          <mat-label>Categorías</mat-label>
+          <input matInput formControlName="categories" type="number">
+        </mat-form-field>
+      </div>
+      
+      <div class="col-md-4 col-6"> <mat-form-field 
+          appearance="outline" 
+          class="w-100" 
+          subscriptSizing="dynamic"> 
+          
+          <mat-label>Cocinas</mat-label>
+          <input matInput type="number" formControlName="kitchens">
+        </mat-form-field>
+      </div>
+    </div> </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="d-flex justify-content-between">
+
+  <div>
+    <button 
+      mat-button 
+      color="warn" 
+      (click)="onDelete()" 
+      *ngIf="isEditMode && !isViewOnly"
+      type="button">
+      <mat-icon>delete</mat-icon>
+      Borrar Plan
+    </button>
+  </div>
+
+  <div class="d-flex gap-2">
+    <button mat-stroked-button (click)="onCancel()" type="button">
+      {{ isViewOnly ? 'Cerrar' : 'Cancelar' }}
+    </button>
+    
+    <button 
+      mat-flat-button 
+      color="primary" 
+      type="submit" 
+      form="plan-form" 
+      [disabled]="!planForm.valid" 
+      *ngIf="!isViewOnly">
+      
+      {{ isEditMode ? 'Guardar Cambios' : 'Crear Plan' }}
+    </button>
+  </div>
+
+</mat-dialog-actions>

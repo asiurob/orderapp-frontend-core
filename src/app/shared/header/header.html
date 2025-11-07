@@ -1,0 +1,63 @@
+<mat-toolbar class="app-header shadow-sm">
+  <div class="d-flex justify-content-between align-items-center w-100">
+
+    <div class="header-left d-flex align-items-center gap-3">
+      <div class="logo">
+        <mat-icon>domain</mat-icon>
+      </div>
+      <div>
+        <h1 class="app-title mb-0"><b>Orderapp</b> Admin</h1>
+        <div class="app-subtitle">Suite de Gestión de Clientes</div>
+      </div>
+    </div>
+
+    <div class="header-right d-flex align-items-center gap-4">
+      <!-- Indica sistema activo o inactivo
+      <div 
+        class="status-indicator d-flex align-items-center gap-2 px-3 py-1"
+        [ngClass]="{ 'active': isSystemActive(), 'inactive': !isSystemActive() }"
+        (click)="appState.toggleSystemStatus()"
+        style="cursor: pointer;">
+
+        <ng-container *ngIf="isSystemActive()">
+          <mat-icon>flaky</mat-icon>
+          <span>Sistema Activo</span>
+        </ng-container>
+
+        <ng-container *ngIf="!isSystemActive()">
+          <mat-icon>flaky</mat-icon>
+          <span>Sistema Inactivo</span>
+        </ng-container>
+      </div>
+-->
+      <!-- Indica sistema notificaciones
+      <button mat-icon-button aria-label="Notificaciones">
+        <mat-icon 
+          [matBadge]="notificationCount()" 
+          [matBadgeHidden]="notificationCount() === 0"
+          matBadgeColor="warn">
+          notifications
+        </mat-icon>
+      </button>
+-->
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user-profile d-flex align-items-center gap-2">
+        <mat-icon>account_circle</mat-icon>
+        <span>Admin</span>
+        <mat-icon>expand_more</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu" panelClass="app-user-menu">
+        <button mat-menu-item *ngFor="let item of userMenuItems">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </button>
+
+        <mat-divider></mat-divider> <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
+
+    </div>
+  </div>
+</mat-toolbar>
