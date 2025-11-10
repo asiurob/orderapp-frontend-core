@@ -71,6 +71,25 @@ html, body {
     overflow-y: auto;
 }
 
+/* --- Snackbars Personalizados --- */
+.success-snackbar {
+    --mdc-snackbar-container-color: var(--success-container);
+    --mdc-snackbar-supporting-text-color: var(--status-active-color);
+    --mat-snack-bar-button-color: var(--status-active-color);
+}
+
+.error-snackbar {
+    --mdc-snackbar-container-color: var(--warn-container);
+    --mdc-snackbar-supporting-text-color: var(--status-hot-color);
+    --mat-snack-bar-button-color: var(--status-hot-color);
+}
+
+.info-snackbar {
+    --mdc-snackbar-container-color: var(--info-container);
+    --mdc-snackbar-supporting-text-color: var(--info);
+    --mat-snack-bar-button-color: var(--info);
+}
+
 :root {
   // --- Colores de Marca (extraídos de tu tema) ---
   --primary: #{map.get(theme.$primary-palette, 70)};

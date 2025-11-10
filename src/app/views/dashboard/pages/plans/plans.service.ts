@@ -1,8 +1,9 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Apollo, gql } from 'apollo-angular';
 import { map } from 'rxjs/operators';
 import { IPlan, IPlanInput, IGraphQLResponse } from './plans.interface';
+import { NotificationService } from 'src/app/shared/notification/notification.service';
 
 const GET_ALL_PLANS = gql`
   query GetAllPlans {
@@ -49,7 +50,7 @@ const GET_PLAN_BY_ID = gql`
         kitchens
         metrics
         isActive
-        isDeleted
+
       }
     }
   }
@@ -94,6 +95,7 @@ const DELETE_PLAN = gql`
 export class PlansService {
   private _plans = signal<IPlan[]>([]);
   public searchTerm = signal<string>('');
+  private notification = inject(NotificationService)
 
   constructor(private apollo: Apollo) {
     this.loadPlans();
@@ -137,16 +139,23 @@ export class PlansService {
     );
   }
 
-  addPlan(planInput: IPlanInput) {
+addPlan(planInput: IPlanInput) {
     this.apollo.mutate< { createPlan: IGraphQLResponse<{id: string}> } >({
       mutation: CREATE_PLAN,
       variables: { input: planInput }
-    }).subscribe(response => {
-      if (response.data?.createPlan.success) {
-        console.log('Plan creado:', response.data.createPlan.message);
-        this.loadPlans();
-      } else {
-        console.error('Error al crear plan:', response.data?.createPlan.errors);
+    }).subscribe({
+      next: (response) => {
+        if (response.data?.createPlan.success) {
+          this.notification.success(response.data.createPlan.message);
+          this.loadPlans();
+        } else {
+          const errorMsg = response.data?.createPlan.errors?.[0] || response.data?.createPlan.message || 'Error desconocido al crear.';
+          this.notification.error(errorMsg);
+        }
+      },
+      error: (err) => {
+        console.error('Error crítico al crear plan:', err);
+        this.notification.error('Error de conexión. Intenta de nuevo.');
       }
     });
   }
@@ -158,12 +167,19 @@ export class PlansService {
         id: id,
         input: planInput 
       }
-    }).subscribe(response => {
-      if (response.data?.updatePlan.success) {
-        console.log('Plan actualizado:', response.data.updatePlan.message);
-        this.loadPlans();
-      } else {
-        console.error('Error al actualizar plan:', response.data?.updatePlan.errors);
+    }).subscribe({
+      next: (response) => {
+        if (response.data?.updatePlan.success) {
+          this.notification.success('Plan actualizado correctamente.');
+          this.loadPlans();
+        } else {
+          const errorMsg = response.data?.updatePlan.errors?.[0] || response.data?.updatePlan.message || 'Error desconocido al actualizar.';
+          this.notification.error(errorMsg);
+        }
+      },
+      error: (err) => {
+        console.error('Error crítico al actualizar plan:', err);
+        this.notification.error('Error de conexión. No se pudo actualizar.');
       }
     });
   }
@@ -172,12 +188,19 @@ export class PlansService {
     this.apollo.mutate< { deletePlan: IGraphQLResponse<{id: string}> } >({
       mutation: DELETE_PLAN,
       variables: { id }
-    }).subscribe(response => {
-      if (response.data?.deletePlan.success) {
-        console.log('Plan borrado:', response.data.deletePlan.message);
-        this.loadPlans();
-      } else {
-        console.error('Error al borrar plan:', response.data?.deletePlan.message);
+    }).subscribe({
+      next: (response) => {
+        if (response.data?.deletePlan.success) {
+          this.notification.success('Plan eliminado correctamente.');
+          this.loadPlans();
+        } else {
+          const errorMsg = response.data?.deletePlan.errors?.[0] || response.data?.deletePlan.message || 'Error desconocido al eliminar.';
+          this.notification.error(errorMsg);
+        }
+      },
+      error: (err) => {
+        console.error('Error crítico al eliminar plan:', err);
+        this.notification.error('Error de conexión. No se pudo eliminar.');
       }
     });
   }

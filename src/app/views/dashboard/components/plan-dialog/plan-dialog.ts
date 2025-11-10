@@ -73,7 +73,7 @@ export class PlanDialog implements OnInit {
       percentPerTransaction: [{ value: 0, disabled: true }, [Validators.required, Validators.min(0)]],
       operativeUsers: [1, [Validators.required, Validators.min(-1)]],
       locations: [1, [Validators.required, Validators.min(-1)]],
-      tables: [-1, [Validators.required, Validators.min(-1)]],
+      tables: [-1, [Validators.required, Validators.min(-1), Validators.max(999)]],
       categories: [-1, [Validators.required, Validators.min(-1)]],
       products: [-1, [Validators.required, Validators.min(-1)]],
       kitchens: [1, [Validators.required, Validators.min(-1)]],
