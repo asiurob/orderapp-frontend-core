@@ -81,13 +81,9 @@ mat-progress-bar {
   height: 6px !important;
   border-radius: 3px;
   margin-bottom: 4px;
-  // Color de fondo de la barra vacía
   --mdc-linear-progress-track-color: var(--health-bar-bg); 
-
-  // Quitamos cualquier color por defecto que pueda aplicar 'mat-primary' etc.
   --mdc-linear-progress-active-indicator-color: transparent !important; 
 
-  // Definimos el color correcto basado en la clase del HOST
   &.progress-high {
       --mdc-linear-progress-active-indicator-color: var(--success) !important; // Verde
   }

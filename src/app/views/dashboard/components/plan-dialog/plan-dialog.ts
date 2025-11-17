@@ -86,7 +86,6 @@ export class PlanDialog implements OnInit {
       this.togglePricingControls(type);
     });
 
-    // Llenado de formulario en modo Edición/Ver
     if (this.isEditMode && this.data?.plan) {
       this.planForm.patchValue(this.data.plan);
       
@@ -101,7 +100,6 @@ export class PlanDialog implements OnInit {
     }
   }
 
-  // Habilita/Deshabilita los campos de precio
   togglePricingControls(type: string): void {
     const fixedCostControl = this.planForm.get('fixedCost');
     const percentControl = this.planForm.get('percentPerTransaction');
