@@ -8,7 +8,8 @@ import {
   ElementRef,
   ViewChild,
   DestroyRef,
-  inject
+  inject,
+  ChangeDetectorRef
 } from '@angular/core';
 import {
   CommonModule
@@ -129,6 +130,7 @@ export class RegistrationDialog implements OnInit {
     private plansService: PlansService,
     private notification: NotificationService,
     private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: RegistrationData | null
   ) {
     this.isEditMode = !!this.data;
@@ -192,7 +194,9 @@ export class RegistrationDialog implements OnInit {
     this.setupPostalCodeListener();
     this.setupMunicipalityListener();
     this.setupNeighborhoodListener();
-  }
+
+    this.cdr.markForCheck();
+   } 
 
   onCancel(): void {
     this.dialogRef.close();
@@ -559,4 +563,48 @@ export class RegistrationDialog implements OnInit {
         }
       });
    }
+
+   handleStep1Next(): void {
+    if (this.isEditMode) {
+      if (this.step1Group.invalid) {
+        this.step1Group.markAllAsTouched();
+        this.notification.error('Por favor, completa todos los campos requeridos.');
+        return;
+      }
+
+      if (this.isSavingStep1()) return;
+      this.isSavingStep1.set(true);
+
+      const payload = this.step1Group.value;
+      if (payload.customerType === 'PERSONA_FISICA') {
+        delete payload.fiscalIdCard; 
+      }
+      this.clientService.updateLegalCustomer(this.data.id, payload)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (response) => {
+            this.isSavingStep1.set(false);
+
+            if (response.success) {
+              this.notification.success(response.message || 'Cliente actualizado.');
+              this.stepper.selectedIndex = 2;
+              this.cdr.markForCheck();
+            
+            } else {
+              this.notification.error(response.errors?.[0] || response.message || 'Error al actualizar.');
+            }
+          },
+          error: (err) => {
+            this.isSavingStep1.set(false);
+            console.error(err);
+          }
+        });
+
+    } 
+    else {
+      this.onStep1Next();
+    }
+  }
+
+
 }

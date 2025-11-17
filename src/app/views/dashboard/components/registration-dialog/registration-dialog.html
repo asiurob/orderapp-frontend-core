@@ -2,7 +2,7 @@
 
 <mat-dialog-content class="dialog-content-wrapper">
 
-  <mat-stepper linear #stepper>
+  <mat-stepper [linear]="!isEditMode" #stepper>
     <mat-step [stepControl]="step1Group">
       <form [formGroup]="step1Group">
         <ng-template matStepLabel>Datos Generales del Cliente</ng-template>
@@ -110,8 +110,10 @@
           </div>
         </div>
         <div class="stepper-actions">
-          <button mat-flat-button color="primary" (click)="onStep1Next()" [disabled]="isSavingStep1()">
-            {{ isSavingStep1() ? 'Guardando...' : 'Siguiente' }}
+          <button mat-flat-button color="primary" (click)="handleStep1Next()"
+            [disabled]="isSavingStep1() || step1Group.invalid">
+
+            {{ isSavingStep1() ? 'Guardando...' : (isEditMode ? 'Guardar y Continuar' : 'Siguiente') }}
           </button>
         </div>
       </form>
