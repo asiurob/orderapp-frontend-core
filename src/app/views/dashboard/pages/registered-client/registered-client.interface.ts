@@ -1,27 +1,29 @@
-export interface IRegisteredClient {
+export interface ILegalCustomer {
   id: string;
-  restaurantName: string;
-  branchCount: number;
-  clientName: string;
+  fullName: string;
+  rfc: string;
+  customerType: 'PERSONA_FISICA' | 'PERSONA_MORAL';
+  status: 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'REJECTED' | 'INACTIVE';
   email: string;
   phone: string;
-  personType: 'fisica' | 'moral';
-  uploadedDocuments: string[];
-  status: 'Completo' | 'Pendiente' | 'En Revisión';
+  legalRepresentativeFirstName: string;
+  legalRepresentativeLastName: string;
+  legalRepresentativeSecondLastName: string;
+  bankAccount: string;
+  bankInstitution: string;
+  createdAt: string;
+  updatedAt: string;
+
 }
 
 export interface IRegisteredClientDetails {
-  id: string; 
+  id: string;
   clientData: any;
-  restaurantData: { 
-      tradeName?: string; 
-      businessName?: string;
-      branches: any[]
-  };
+  restaurantData: any;
   uploadedDocuments: string[];
   status: string;
 }
 
-export interface IRegisteredClientWithProgress extends IRegisteredClient {
-    documentProgress: number;
+export interface ILegalCustomerWithProgress extends ILegalCustomer {
+  documentProgress: number;
 }

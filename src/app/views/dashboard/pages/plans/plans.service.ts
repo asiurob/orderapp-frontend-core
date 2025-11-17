@@ -1,9 +1,10 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Apollo, gql } from 'apollo-angular';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { IPlan, IPlanInput, IGraphQLResponse } from './plans.interface';
 import { NotificationService } from 'src/app/shared/notification/notification.service';
+import { Observable, of } from 'rxjs';
 
 const GET_ALL_PLANS = gql`
   query GetAllPlans {
@@ -204,4 +205,31 @@ addPlan(planInput: IPlanInput) {
       }
     });
   }
+
+  getPlansForSelect(): Observable<{ id: string, name: string, description: string }[]> {
+  return this.apollo.query< { getAllPlans: IGraphQLResponse<any[]> } >({
+    query: GET_ALL_PLANS,
+    fetchPolicy: 'cache-first'
+  }).pipe(
+    map(result => {
+      if (result.data?.getAllPlans.success) {
+        return result.data.getAllPlans.data
+          .filter(plan => plan.isActive && plan.isPublic)
+          .map(plan => ({
+            id: plan.id,
+            name: plan.planName,
+            description: `Costo: $${plan.fixedCost} + ${plan.percentPerTransaction}% Tx` 
+          }));
+      }
+
+      this.notification.error('No se pudieron cargar los planes.');
+      return []; 
+    }),
+    catchError((err) => {
+      console.error('Error crítico cargando planes para select:', err);
+      this.notification.error('Error de red al cargar planes.');
+      return of([]);
+    })
+  );
+}
 }
