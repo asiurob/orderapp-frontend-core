@@ -5,9 +5,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 export interface SuccessInfoData {
+  title: string;
+  message: string;
+  icon?: string;
   username: string;
   temporaryPassword: string;
-  workspaceUrl: string;
+  workspaceUrl?: string;
 }
 
 @Component({
@@ -18,6 +21,8 @@ export interface SuccessInfoData {
   styleUrls: ['./success-info-dialog.scss'],
 })
 export class SuccessInfoDialog {
+
+
   constructor(
     public dialogRef: MatDialogRef<SuccessInfoDialog>,
     @Inject(MAT_DIALOG_DATA) public data: SuccessInfoData

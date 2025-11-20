@@ -6,6 +6,12 @@ export interface ILegalCustomer {
   status: 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'REJECTED' | 'INACTIVE';
   email: string;
   phone: string;
+  ownerUser?: {
+    id: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+  };
   legalRepresentativeFirstName: string;
   legalRepresentativeLastName: string;
   legalRepresentativeSecondLastName: string;

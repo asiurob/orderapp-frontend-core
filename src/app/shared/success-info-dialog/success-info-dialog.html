@@ -1,22 +1,24 @@
 <div class="success-header">
-  <mat-icon class="success-icon">check_circle</mat-icon>
-  <h2 mat-dialog-title>¡Restaurante Creado Exitosamente!</h2>
+  <mat-icon class="success-icon">{{ data.icon || 'check_circle' }}</mat-icon>
+
+  <h2 mat-dialog-title>{{ data.title }}</h2>
 </div>
 
 <mat-dialog-content>
   <p class="text-muted">
-    El restaurante ha sido registrado. Estos son los datos de acceso para el dueño.
+    {{ data.message }}
     <br><strong>¡Guárdalos en un lugar seguro!</strong>
   </p>
-  
+
   <div class="info-container">
-    <div class="info-item">
+
+    <div class="info-item" *ngIf="data.workspaceUrl">
       <span class="info-label">URL del Workspace:</span>
       <span class="info-value">
         <a [href]="data.workspaceUrl" target="_blank">{{ data.workspaceUrl }}</a>
       </span>
     </div>
-    
+
     <div class="info-item">
       <span class="info-label">Usuario (Username):</span>
       <span class="info-value code">{{ data.username }}</span>

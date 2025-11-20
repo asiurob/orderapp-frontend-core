@@ -2,7 +2,7 @@
 
 <mat-dialog-content class="dialog-content-wrapper">
 
-  <mat-stepper [linear]="!isEditMode" #stepper>
+  <mat-stepper linear #stepper>
     <mat-step [stepControl]="step1Group">
       <form [formGroup]="step1Group">
         <ng-template matStepLabel>Datos Generales del Cliente</ng-template>
@@ -27,8 +27,11 @@
           <div class="col-md-4">
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Teléfono de contacto</mat-label>
-              <input matInput formControlName="phone">
-              <mat-error>Este campo es requerido.</mat-error>
+
+              <input matInput formControlName="phone" type="tel">
+
+              <mat-error *ngIf="step1Group.get('phone')?.hasError('required')">Este campo es requerido.</mat-error>
+              <mat-error *ngIf="step1Group.get('phone')?.hasError('pattern')">¡Solo se permiten números!</mat-error>
             </mat-form-field>
           </div>
           <div class="col-md-4">
@@ -104,16 +107,27 @@
           <div class="col-md-6">
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Clabe bancaria (18 dígitos)</mat-label>
-              <input matInput formControlName="bankAccount">
-              <mat-error>Este campo es requerido.</mat-error>
+              <input matInput formControlName="bankAccount" type="tel" maxlength="18" (blur)="forceErrorCheck()">
+              <mat-error *ngIf="step1Group.get('bankAccount')?.hasError('required')">
+                Este campo es requerido.
+              </mat-error>
+              <mat-error *ngIf="step1Group.get('bankAccount')?.hasError('pattern')">
+                ¡Solo se permiten números!
+              </mat-error>
+              <mat-error *ngIf="step1Group.get('bankAccount')?.hasError('minLength')">
+                ¡La CLABE debe tener 18 dígitos!
+              </mat-error>
             </mat-form-field>
           </div>
         </div>
         <div class="stepper-actions">
-          <button mat-flat-button color="primary" (click)="handleStep1Next()"
-            [disabled]="isSavingStep1() || step1Group.invalid">
+          <button mat-flat-button color="primary" *ngIf="!isEditMode" matStepperNext>
+            Siguiente
+          </button>
 
-            {{ isSavingStep1() ? 'Guardando...' : (isEditMode ? 'Guardar y Continuar' : 'Siguiente') }}
+          <button mat-flat-button color="primary" *ngIf="isEditMode" (click)="handleStep1Next()"
+            [disabled]="isSavingStep1() || step1Group.invalid">
+            Guardar y Continuar
           </button>
         </div>
       </form>
@@ -312,8 +326,9 @@
 
 <mat-dialog-actions align="end">
   <button mat-stroked-button (click)="onCancel()">Cancelar</button>
+
   <button mat-flat-button color="primary" (click)="submitForm()"
-    [disabled]="!step1Group.valid || !step2Group.valid || !step3Group.valid">
+    [disabled]="!step1Group.valid || !step2Group.valid || ((stepper?.selectedIndex ?? 0) < 2)">
     {{ isEditMode ? 'Guardar Cambios' : 'Finalizar Registro' }}
   </button>
 </mat-dialog-actions>

@@ -12,7 +12,8 @@ import {
   find,
   tap,
   catchError,
-  of
+  of ,
+  forkJoin
 } from 'rxjs';
 import {
   // ¡Asegúrate de tener TODAS las interfaces!
@@ -35,14 +36,17 @@ const REQUIRED_DOCS_MORAL = ["Acta Constitutiva", "RPC", "Poder Legal", "ID Rep 
 
 // Para la Tabla (Step 0)
 const GET_ALL_LEGAL_CUSTOMERS = gql `
- query GetAllLegalCustomers { 
-  getAllLegalCustomers(input: {}) { 
-   success 
-   message 
-   data { id fullName rfc customerType status email phone } 
-   errors 
-  } 
- }
+  query GetAllLegalCustomers { 
+    getAllLegalCustomers(input: {}) { 
+      success 
+      message 
+      data { 
+        id fullName rfc customerType status email phone 
+        ownerUser { id username firstName lastName } 
+      } 
+      errors 
+    } 
+  }
 `;
 
 // Para el Lápiz (Editar Step 1)
@@ -71,7 +75,16 @@ const CREATE_LEGAL_CUSTOMER = gql `
 const UPDATE_LEGAL_CUSTOMER = gql `
   mutation UpdateLegalCustomer($id: ID!, $input: UpdateLegalCustomerInput!) { 
     updateLegalCustomer(id: $id, input: $input) { 
-      success message data { id fullName email phone status } errors 
+      success 
+      message 
+      data { 
+        id 
+        fullName 
+        email 
+        phone 
+        status 
+      } 
+      errors 
     } 
   }
 `;
@@ -131,6 +144,67 @@ const SEARCH_STATES = gql `
  }
 `;
 
+const GET_RESTAURANTS_BY_LEGAL_CUSTOMER = gql `
+  query GetRestaurantsByLegalCustomer($input: GetRestaurantsByLegalCustomerInput!) {
+    getRestaurantsByLegalCustomer(input: $input) {
+      success
+      message
+      data {
+        id
+        commercialName
+        branch
+        workspaceSlug
+        street
+        exteriorNumber
+        interiorNumber
+        status
+        notes
+        stateId
+        state { id name }
+        municipalityId
+        municipality { id name }
+        neighborhoodId
+        neighborhood { id name }
+        postalCodeId
+        postalCode { id code }
+        plan { id planName }
+      }
+      errors
+    }
+  }
+`;
+
+const UPDATE_RESTAURANT = gql `
+  mutation UpdateRestaurant($id: ID!, $input: UpdateRestaurantInput!) { 
+    updateRestaurant(id: $id, input: $input) { 
+      success 
+      message 
+      data { 
+        id 
+        commercialName 
+        status 
+      } 
+      errors 
+    } 
+  }
+`;
+
+const RESET_PASSWORD_BY_ADMIN = gql `
+  mutation ResetPasswordByAdmin($id: ID!) { 
+    resetPasswordByAdmin(id: $id) { 
+      success 
+      message 
+      data { 
+        id 
+        username 
+        temporaryPassword 
+        # No necesitamos más campos para el modal
+      } 
+      errors 
+    } 
+  }
+`;
+
 
 @Injectable({
   providedIn: 'root'
@@ -182,7 +256,7 @@ export class RegisteredClientsService {
       if (response.success) {
         this._clients.set(response.data);
       } else {
-        this.notification.error(response.errors ?. [0] || response.message || 'Error al cargar clientes.');
+        this.notification.error(response.errors ?.[0] || response.message || 'Error al cargar clientes.');
       }
     });
   }
@@ -196,7 +270,7 @@ export class RegisteredClientsService {
   // --- MÉTODOS PARA EL MODAL ---
 
   getClientDetailsById(id: string): Observable < IRegisteredClientDetails | undefined > {
-    return this.apollo.query < {
+    const customerRequest = this.apollo.query < {
       getLegalCustomer: IGraphQLResponse < ILegalCustomer >
     } > ({
       query: GET_LEGAL_CUSTOMER_BY_ID,
@@ -204,24 +278,47 @@ export class RegisteredClientsService {
         id
       },
       fetchPolicy: 'network-only'
-    }).pipe(
-      map(result => {
-        if (result.data ?.getLegalCustomer.success) {
-          const customerData = result.data.getLegalCustomer.data;
-          const details: IRegisteredClientDetails = {
-            id: customerData.id,
-            clientData: customerData, // Step 1
-            restaurantData: null, // Step 2 (vacío)
-            uploadedDocuments: [], // Step 3 (vacío)
-            status: customerData.status
-          };
-          return details;
+    });
+    const restaurantRequest = this.apollo.query < {
+      getRestaurantsByLegalCustomer: IGraphQLResponse < any[] >
+    } > ({
+      query: GET_RESTAURANTS_BY_LEGAL_CUSTOMER,
+      variables: {
+        input: {
+          legalCustomerId: id
         }
-        this.notification.error(result.data ?.getLegalCustomer.message || 'Error al cargar el cliente.');
-        return undefined;
+      },
+      fetchPolicy: 'network-only'
+    });
+    return forkJoin([customerRequest, restaurantRequest]).pipe(
+      map(([customerRes, restaurantRes]) => {
+
+        if (!customerRes.data ?.getLegalCustomer.success) {
+          this.notification.error(customerRes.data ?.getLegalCustomer.message || 'Error al cargar cliente.');
+          return undefined;
+        }
+        const customerData = customerRes.data.getLegalCustomer.data;
+
+        let restaurantData = null;
+        if (restaurantRes.data ?.getRestaurantsByLegalCustomer.success) {
+          const restaurants = restaurantRes.data.getRestaurantsByLegalCustomer.data;
+          if (restaurants && restaurants.length > 0) {
+            restaurantData = restaurants[0];
+          }
+        }
+
+        const details: IRegisteredClientDetails = {
+          id: customerData.id,
+          clientData: customerData,
+          restaurantData: restaurantData,
+          uploadedDocuments: [],
+          status: customerData.status
+        };
+
+        return details;
       }),
       catchError((err) => {
-        this.notification.error('Error de red al cargar cliente.');
+        this.notification.error('Error de red al cargar detalles.');
         console.error(err);
         return of(undefined);
       })
@@ -393,6 +490,53 @@ export class RegisteredClientsService {
         console.error("Error de Apollo en searchStates:", err);
         this.notification.error('Error al buscar estados.');
         return of([]);
+      })
+    );
+  }
+
+  updateRestaurant(id: string, input: any): Observable < IGraphQLResponse < any >> {
+    return this.apollo.mutate < {
+      updateRestaurant: IGraphQLResponse < any >
+    } > ({
+      mutation: UPDATE_RESTAURANT,
+      variables: {
+        id: id,
+        input: input
+      }
+    }).pipe(
+      map(result => result.data!.updateRestaurant),
+      catchError((err: any) => {
+        console.error("Error de Apollo en updateRestaurant:", err);
+        this.notification.error('Error de conexión. No se pudo actualizar el restaurante.');
+        return of({
+          success: false,
+          message: "Error de red",
+          data: null,
+          errors: [err.message]
+        });
+      })
+    );
+  }
+
+  resetPassword(userId: string): Observable < IGraphQLResponse < any >> {
+    return this.apollo.mutate < {
+      resetPasswordByAdmin: IGraphQLResponse < any >
+    } > ({
+      mutation: RESET_PASSWORD_BY_ADMIN,
+      variables: {
+        id: userId
+      }
+    }).pipe(
+      map(result => result.data!.resetPasswordByAdmin),
+      catchError((err: any) => {
+        console.error("Error de Apollo en resetPassword:", err);
+        this.notification.error('Error de conexión. No se pudo resetear la contraseña.');
+        return of({
+          success: false,
+          message: "Error de red",
+          data: null,
+          errors: [err.message]
+        });
       })
     );
   }

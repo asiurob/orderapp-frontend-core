@@ -81,7 +81,9 @@ import {
 import {
   PlansService
 } from '../../pages/plans/plans.service';
-import { SuccessInfoDialog } from 'src/app/shared/success-info-dialog/success-info-dialog';
+import {
+  SuccessInfoDialog
+} from 'src/app/shared/success-info-dialog/success-info-dialog';
 
 type RegistrationData = any;
 
@@ -99,7 +101,7 @@ export class RegistrationDialog implements OnInit {
   private destroyRef = inject(DestroyRef);
   @ViewChildren('fileInputFisica') fileInputsFisica!: QueryList < ElementRef < HTMLInputElement >> ;
   @ViewChildren('fileInputMoral') fileInputsMoral!: QueryList < ElementRef < HTMLInputElement >> ;
-
+  private isRegistrationSuccessful: boolean = false;
   step1Group!: FormGroup;
   step2Group!: FormGroup;
   step3Group!: FormGroup;
@@ -137,14 +139,16 @@ export class RegistrationDialog implements OnInit {
   }
 
   ngOnInit(): void {
-    // --- STEP 1 ---
     this.step1Group = this.fb.group({
       fullName: ['', Validators.required],
-      phone: ['', Validators.required],
+      phone: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       email: ['', [Validators.required, Validators.email]],
       rfc: ['', Validators.required],
       customerType: ['PERSONA_FISICA', Validators.required],
-      bankAccount: ['', [Validators.required, Validators.maxLength(18)]],
+      bankAccount: this.fb.control('', {
+        validators: [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(18)],
+        updateOn: 'blur'
+      }),
       bankInstitution: ['', Validators.required],
       legalRepresentativeFirstName: ['', Validators.required],
       legalRepresentativeLastName: ['', Validators.required],
@@ -152,7 +156,6 @@ export class RegistrationDialog implements OnInit {
       fiscalIdCard: ['']
     });
 
-    // --- STEP 2 ---
     this.step2Group = this.fb.group({
       postalCodeId: [null],
       stateId: [null],
@@ -171,15 +174,50 @@ export class RegistrationDialog implements OnInit {
       notes: ['']
     });
 
-    // --- STEP 3 ---
     this.step3Group = this.fb.group({});
     if (this.isEditMode && this.data) {
+
       if (this.data.clientData) {
         this.step1Group.patchValue(this.data.clientData);
         this.personType.set(this.step1Group.get('customerType') ?.value || 'PERSONA_FISICA');
       }
+
       if (this.data.restaurantData) {
-        this.step2Group.patchValue(this.data.restaurantData);
+        const r = this.data.restaurantData;
+
+        this.step2Group.patchValue({
+          planId: r.plan ?.id,
+          commercialName: r.commercialName,
+          branch: r.branch,
+          street: r.street,
+          exteriorNumber: r.exteriorNumber,
+          interiorNumber: r.interiorNumber,
+          notes: r.notes,
+          postalCode: r.postalCode ?.code,
+
+          state: r.state,
+          municipality: r.municipality,
+          neighborhood: r.neighborhood,
+
+          postalCodeId: r.postalCodeId,
+          stateId: r.stateId,
+          municipalityId: r.municipalityId,
+          neighborhoodId: r.neighborhoodId
+        });
+
+        if (r.stateId) {
+          this.step2Group.get('municipality') ?.enable();
+          this.clientService.getMunicipalitiesByState(r.stateId).subscribe(munis => {
+            this.municipalityListSource.next(munis);
+          });
+        }
+
+        if (r.municipalityId) {
+          this.step2Group.get('neighborhood') ?.enable();
+          this.clientService.getNeighborhoodsByMunicipality(r.municipalityId).subscribe(cols => {
+            this.neighborhoodListSource.next(cols);
+          });
+        }
       }
     }
 
@@ -187,35 +225,25 @@ export class RegistrationDialog implements OnInit {
       this.personType.set(value);
       this.updateValidators(value);
     });
+
     this.planOptions$ = this.plansService.getPlansForSelect();
 
     this.loadAllStates();
-    this.setupStateListener();
     this.setupPostalCodeListener();
+    this.setupStateListener();
     this.setupMunicipalityListener();
     this.setupNeighborhoodListener();
 
     this.cdr.markForCheck();
-   } 
+  }
 
   onCancel(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(this.isRegistrationSuccessful);
   }
 
   submitForm(): void {
-    if (this.step1Group.valid && this.step2Group.valid && this.step3Group.valid) {
-      const finalData = {
-        clientData: this.step1Group.value,
-        restaurantData: this.step2Group.value,
-      };
-      this.dialogRef.close(finalData);
-    } else {
-      this.step1Group.markAllAsTouched();
-      this.step2Group.markAllAsTouched();
-      this.step3Group.markAllAsTouched();
-      console.error("Formulario inválido");
-    }
-  }
+      this.dialogRef.close(true);
+   }
 
   updateValidators(customerType: 'PERSONA_FISICA' | 'PERSONA_MORAL'): void {
     const fiscalIdCard = this.step1Group.get('fiscalIdCard');
@@ -236,106 +264,73 @@ export class RegistrationDialog implements OnInit {
   }
 
   onFileSelected(event: Event, docName: string): void {
-    const file = (event.target as HTMLInputElement).files ?. [0];
-    if (file) {
-      console.log(`Archivo para '${docName}':`, file.name);
-    }
+    const file = (event.target as HTMLInputElement).files ?.[0];
+    if (file) {}
     (event.target as HTMLInputElement).value = '';
-  }
-
-  onStep1Next(): void {
-    if (this.step1Group.invalid) {
-      this.step1Group.markAllAsTouched();
-      this.notification.error('Por favor, completa todos los campos requeridos.');
-      return;
-    }
-    if (this.isSavingStep1()) return;
-    this.isSavingStep1.set(true);
-    const payload = this.step1Group.value;
-    if (payload.customerType === 'PERSONA_FISICA') {
-      delete payload.fiscalIdCard;
-    }
-    this.clientService.createLegalCustomer(payload)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response) => {
-          this.isSavingStep1.set(false);
-          if (response.success && response.data ?.id) {
-            this.notification.success(response.message);
-            this.newCustomerId = response.data.id;
-            this.stepper.next();
-          } else {
-            const errorMsg = response.errors ?. [0] || response.message || 'Error al guardar.';
-            this.notification.error(errorMsg);
-          }
-        },
-        error: (err) => {
-          this.isSavingStep1.set(false);
-          this.notification.error('Error crítico. Revisa la consola.');
-          console.error(err);
-        }
-      });
   }
 
   setupPostalCodeListener(): void {
     const cpControl = this.step2Group.get('postalCode');
     if (!cpControl) return;
+
     cpControl.valueChanges.pipe(
       debounceTime(400),
       distinctUntilChanged(),
       switchMap(cpValue => {
         if (cpValue && cpValue.length === 5) {
-          this.step2Group.get('state') ?.disable();
-          this.step2Group.get('municipality') ?.disable();
-          this.step2Group.get('neighborhood') ?.disable();
+          this.step2Group.get('state')?.disable();
+          this.step2Group.get('municipality')?.disable();
+          this.step2Group.get('neighborhood')?.disable();
           return this.clientService.getLocationByPostalCode(cpValue);
         } else {
-          this.step2Group.get('state') ?.enable();
-          this.step2Group.get('municipality') ?.enable();
-          this.step2Group.get('neighborhood') ?.enable();
-          return of({
-            success: false,
-            message: 'Modo Manual',
-            data: null,
-            errors: []
-          });
+          return of({ success: false, message: 'Modo Manual', data: null, errors: [] });
         }
       }),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(response => {
-      this.step2Group.get('state') ?.enable();
-      this.step2Group.get('municipality') ?.enable();
-      this.step2Group.get('neighborhood') ?.enable();
       if (response.success && response.data) {
         const data = response.data;
+
+        this.step2Group.get('neighborhood')?.enable();
+
         this.step2Group.patchValue({
           state: data.state,
           municipality: data.municipality,
           postalCodeId: data.zipCode.id,
           stateId: data.state.id,
           municipalityId: data.municipality.id,
-          neighborhood: null,
-          neighborhoodId: null,
-          street: '',
-          exteriorNumber: '',
-          interiorNumber: ''
+          neighborhood: null, 
+          neighborhoodId: null, 
+          street: '', 
+          exteriorNumber: '', 
+          interiorNumber: '' 
         });
-        this.neighborhoodOptions$ = of (data.neighborhoods);
-      } else if (response.message !== 'Modo Manual') {
-        this.notification.error(response.message || 'Código Postal no encontrado.');
-        this.step2Group.patchValue({
-          state: null,
-          municipality: null,
-          neighborhood: null,
-          postalCodeId: null,
-          stateId: null,
-          municipalityId: null,
-          neighborhoodId: null,
-          street: '',
-          exteriorNumber: '',
-          interiorNumber: ''
-        });
-        this.neighborhoodOptions$ = of ([]);
+        this.neighborhoodOptions$ = of(data.neighborhoods);
+        this.step2Group.get('state')?.disable({ emitEvent: false });
+        this.step2Group.get('municipality')?.disable({ emitEvent: false });
+
+      } 
+      else {
+        this.step2Group.get('state')?.enable();
+        this.step2Group.get('municipality')?.enable();
+        this.step2Group.get('neighborhood')?.enable();
+
+        if (response.message !== 'Modo Manual') {
+          this.notification.error(response.message || 'Código Postal no encontrado.');
+          this.step2Group.patchValue({
+            state: null,
+            municipality: null,
+            neighborhood: null,
+            postalCodeId: null,
+            stateId: null,
+            municipalityId: null,
+            neighborhoodId: null,
+            street: '',
+            exteriorNumber: '',
+            interiorNumber: ''
+          });
+          this.neighborhoodOptions$ = of([]);
+        }
       }
     });
   }
@@ -358,8 +353,6 @@ export class RegistrationDialog implements OnInit {
         })))
       )
       .subscribe(mappedStates => {
-        console.log('✅ ESTADOS CARGADOS EN LA "CAJITA":', mappedStates);
-
         if (mappedStates && mappedStates.length > 0) {
           this.stateListSource.next(mappedStates);
         } else {
@@ -491,120 +484,259 @@ export class RegistrationDialog implements OnInit {
   }
 
   onStep2Next(): void {
-      if (this.step2Group.invalid) {
-         this.step2Group.markAllAsTouched();
-         this.notification.error('Por favor, completa todos los campos del restaurante y la dirección.');
-         return;
-      }
+    // 1. Validaciones de Forms
+    if (this.step1Group.invalid) {
+      this.stepper.selectedIndex = 0;
+      this.step1Group.markAllAsTouched();
+      this.notification.error('Por favor, completa los datos del cliente (Paso 1).');
+      return;
+    }
+    if (this.step2Group.invalid) {
+      this.step2Group.markAllAsTouched();
+      this.notification.error('Por favor, completa los datos del restaurante (Paso 2).');
+      return;
+    }
+
+    // 2. Validaciones de Autocompletes
+    const formValues = this.step2Group.getRawValue();
+    if (typeof formValues.state !== 'object' || !formValues.state ?.id) {
+      this.notification.error('Por favor, selecciona un Estado válido de la lista.');
+      return;
+    }
+    if (typeof formValues.municipality !== 'object' || !formValues.municipality ?.id) {
+      this.notification.error('Por favor, selecciona un Municipio válido de la lista.');
+      return;
+    }
 
     if (this.isSavingStep2()) return;
     this.isSavingStep2.set(true);
 
-      const formValues = this.step2Group.getRawValue();
+    const payloadBase = {
+      ...formValues,
+      stateId: formValues.state.id,
+      municipalityId: formValues.municipality.id,
 
-    if (typeof formValues.state !== 'object' || !formValues.state?.id) {
-      this.notification.error('Por favor, selecciona un Estado válido de la lista.');
-      this.isSavingStep2.set(false);
-      return;
-    }
-    if (typeof formValues.municipality !== 'object' || !formValues.municipality?.id) {
-      this.notification.error('Por favor, selecciona un Municipio válido de la lista.');
-      this.isSavingStep2.set(false);
-      return;
-    }
+      state: undefined,
+      municipality: undefined,
+      neighborhood: undefined,
+      postalCode: undefined
+    };
+    delete payloadBase.state;
+    delete payloadBase.municipality;
+    delete payloadBase.neighborhood;
+    delete payloadBase.postalCode;
 
-      const payload = {
-         ...formValues,
-         legalCustomerId: this.newCustomerId,
-         stateId: formValues.state.id,
-         municipalityId: formValues.municipality.id,
-
-         state: undefined, 
-         municipality: undefined,
-         neighborhood: undefined,
-      postalCode: undefined 
-      };
-      
-   	delete payload.state;
-      delete payload.municipality;
-      delete payload.neighborhood;
-    delete payload.postalCode;
-
-    this.clientService.createRestaurant(payload)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response: any) => { 
-          this.isSavingStep2.set(false); 
-
-          if (response.success && response.data && response.ownerInfo) {
-            this.notification.success(response.message);
-            
-            console.log('✅ ¡Respuesta de CreateRestaurant (el "loot")!', response);
-            this.newRestaurantInfo = response; 
-            
-            const successDialogRef = this.dialog.open(SuccessInfoDialog, {
-              width: '500px',
-              disableClose: true,
-              data: response.ownerInfo 
-            });
-
-            successDialogRef.afterClosed().subscribe(() => {
-              this.stepper.next();
-            });
-            
-          } else {
-            this.notification.error(response.errors?.[0] || response.message || 'Error al crear restaurante.');
-          }
-        },
-        error: (err) => {
-          this.isSavingStep2.set(false);
-          this.notification.error('Error crítico de red. Revisa la consola.');
-          console.error(err);
-        }
-      });
-   }
-
-   handleStep1Next(): void {
     if (this.isEditMode) {
-      if (this.step1Group.invalid) {
-        this.step1Group.markAllAsTouched();
-        this.notification.error('Por favor, completa todos los campos requeridos.');
+
+      // Validamos que tengamos el ID del restaurante a editar
+      const restaurantId = this.data?.restaurantData?.id;
+      if (!restaurantId) {
+        this.isSavingStep2.set(false);
+        this.notification.error('Error crítico: No se encontró el ID del restaurante para editar.');
         return;
       }
 
-      if (this.isSavingStep1()) return;
-      this.isSavingStep1.set(true);
-
-      const payload = this.step1Group.value;
-      if (payload.customerType === 'PERSONA_FISICA') {
-        delete payload.fiscalIdCard; 
-      }
-      this.clientService.updateLegalCustomer(this.data.id, payload)
+      this.clientService.updateRestaurant(restaurantId, payloadBase)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: (response) => {
-            this.isSavingStep1.set(false);
-
+          next: (response: any) => {
+            this.isSavingStep2.set(false);
             if (response.success) {
-              this.notification.success(response.message || 'Cliente actualizado.');
-              this.stepper.selectedIndex = 2;
-              this.cdr.markForCheck();
-            
+              this.notification.success(response.message || 'Restaurante actualizado.');
+
+              // Avanzamos al Step 3
+              setTimeout(() => {
+                this.stepper.selectedIndex = 2;
+                this.cdr.markForCheck();
+              });
             } else {
-              this.notification.error(response.errors?.[0] || response.message || 'Error al actualizar.');
+              this.notification.error(response.errors ?.[0] || 'Error al actualizar restaurante.');
             }
           },
           error: (err) => {
-            this.isSavingStep1.set(false);
+            this.isSavingStep2.set(false);
+            this.notification.error('Error de red al actualizar.');
             console.error(err);
           }
         });
 
-    } 
-    else {
-      this.onStep1Next();
+      return;
+    }
+
+    if (this.newCustomerId) {
+      this._callCreateRestaurant(this.newCustomerId);
+    } else {
+
+      const payloadStep1 = this.step1Group.value;
+      if (payloadStep1.customerType === 'PERSONA_FISICA') delete payloadStep1.fiscalIdCard;
+
+      this.clientService.createLegalCustomer(payloadStep1)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (res: any) => {
+            if (res.success && res.data ?.id) {
+              this.newCustomerId = res.data.id;
+              this._callCreateRestaurant(res.data.id);
+            } else {
+              this.isSavingStep2.set(false);
+              this.notification.error(res.errors ?.[0] || 'Error al crear cliente.');
+            }
+          },
+          error: (err) => {
+            this.isSavingStep2.set(false);
+            this.notification.error('Error de red.');
+          }
+        });
     }
   }
 
+  // Método auxiliar para crear el restaurante y limpiar el payload
+  private _callCreateRestaurant(legalCustomerId: string): void {
+    const formValuesStep2 = this.step2Group.getRawValue();
 
+    const payloadStep2 = {
+      ...formValuesStep2,
+      legalCustomerId: legalCustomerId,
+      stateId: formValuesStep2.state.id,
+      municipalityId: formValuesStep2.municipality.id,
+
+      state: undefined,
+      municipality: undefined,
+      neighborhood: undefined,
+      postalCode: undefined
+    };
+    delete payloadStep2.state;
+    delete payloadStep2.municipality;
+    delete payloadStep2.neighborhood;
+    delete payloadStep2.postalCode;
+
+    this.clientService.createRestaurant(payloadStep2)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (responseStep2: any) => {
+          this.isSavingStep2.set(false);
+
+          if (responseStep2.success && responseStep2.data && responseStep2.ownerInfo) {
+            this.notification.success('¡Cliente y Restaurante creados!');
+            this.isRegistrationSuccessful = true;
+            this.newRestaurantInfo = responseStep2;
+
+            // Mostramos el diálogo de éxito con las credenciales
+            const successDialogRef = this.dialog.open(SuccessInfoDialog, {
+              width: '500px',
+              disableClose: true,
+              data: {
+                title: '¡Restaurante Creado Exitosamente!',
+                message: 'El restaurante ha sido registrado. Estos son los datos de acceso para el dueño.',
+                icon: 'store',
+                username: responseStep2.ownerInfo.username,
+                temporaryPassword: responseStep2.ownerInfo.temporaryPassword,
+                workspaceUrl: responseStep2.ownerInfo.workspaceUrl
+              }
+            });
+
+            successDialogRef.afterClosed().subscribe(() => {
+              setTimeout(() => {
+                this.stepper.selectedIndex = 2;
+                this.cdr.markForCheck();
+              });
+            });
+
+          } else {
+            this.notification.error(responseStep2.errors ?.[0] || responseStep2.message || 'Error al crear restaurante.');
+          }
+        },
+        error: (errStep2) => {
+          this.isSavingStep2.set(false);
+          this.notification.error('Error de red creando el restaurante.');
+          console.error(errStep2);
+        }
+      });
+  }
+
+  handleStep1Next(): void {
+    if (this.step1Group.invalid) {
+      this.step1Group.markAllAsTouched();
+      this.notification.error('Por favor, completa todos los campos requeridos.');
+      return;
+    }
+
+    if (this.isSavingStep1()) return;
+    this.isSavingStep1.set(true);
+
+    const payload = this.step1Group.value;
+    if (payload.customerType === 'PERSONA_FISICA') {
+      delete payload.fiscalIdCard;
+    }
+    this.clientService.updateLegalCustomer(this.data.id, payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response: any) => {
+          this.isSavingStep1.set(false);
+
+          if (response.success) {
+            this.notification.success(response.message || 'Cliente actualizado.');
+            this.stepper.selectedIndex = 1;
+            this.cdr.markForCheck();
+
+          } else {
+            this.notification.error(response.errors ?.[0] || response.message || 'Error al actualizar.');
+          }
+        },
+        error: (err) => {
+          this.isSavingStep1.set(false);
+          this.notification.error('Error crítico de red. Revisa la consola.');
+          console.error(err);
+        }
+      });
+  }
+
+  onStep1Next(): void {
+    if (this.step1Group.invalid) {
+      this.step1Group.markAllAsTouched();
+      this.notification.error('Por favor, completa todos los campos requeridos.');
+      return;
+    }
+
+    if (this.isSavingStep1()) return;
+    this.isSavingStep1.set(true);
+
+    const payload = this.step1Group.value;
+    if (payload.customerType === 'PERSONA_FISICA') {
+      delete payload.fiscalIdCard;
+    }
+
+    this.clientService.createLegalCustomer(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.isSavingStep1.set(false);
+
+          if (response.success && response.data ?.id) {
+            this.notification.success(response.message);
+            this.newCustomerId = response.data.id;
+
+            setTimeout(() => {
+              this.stepper.selectedIndex = 1;
+              this.cdr.markForCheck();
+            });
+
+          } else {
+            const errorMsg = response.errors ?.[0] || response.message || 'Error al guardar.';
+            this.notification.error(errorMsg);
+            this.cdr.markForCheck();
+          }
+        },
+        error: (err) => {
+          this.isSavingStep1.set(false);
+          this.notification.error('Error crítico. Revisa la consola.');
+          console.error(err);
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  forceErrorCheck(): void {
+    this.cdr.markForCheck();
+  }
 }

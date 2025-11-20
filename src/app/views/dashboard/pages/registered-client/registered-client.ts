@@ -56,6 +56,8 @@ import {
 import {
   NotificationService
 } from 'src/app/shared/notification/notification.service';
+import { ConfirmDialog } from 'src/app/shared/confirm-dialog/confirm-dialog';
+import { SuccessInfoDialog } from 'src/app/shared/success-info-dialog/success-info-dialog';
 
 @Component({
   selector: 'ord-core-registered-client',
@@ -157,7 +159,6 @@ export class RegisteredClient implements AfterViewInit {
 
           dialogRef.afterClosed().subscribe(result => {
             if (result) {
-              console.log('Datos guardados desde modal (Editar):', result);
               this.registeredClientsService.loadClients();
             }
           });
@@ -169,4 +170,43 @@ export class RegisteredClient implements AfterViewInit {
       });
   }
 
+  resetPassword(client: ILegalCustomer): void {
+    if (!client.ownerUser || !client.ownerUser.id) {
+      return;
+    }
+
+    // 2. Confirmación
+    const confirmRef = this.dialog.open(ConfirmDialog, {
+      width: '400px',
+      data: {
+        title: 'Restablecer Contraseña',
+        message: `¿Estás seguro de reiniciar la contraseña para el usuario ${client.ownerUser.username}? Se generará una nueva contraseña temporal.`,
+        confirmText: 'Sí, Reiniciar',
+        confirmColor: 'warn'
+      }
+    });
+
+    confirmRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.registeredClientsService.resetPassword(client.ownerUser!.id).subscribe(response => {
+          if (response.success && response.data) {
+            this.dialog.open(SuccessInfoDialog, {
+              width: '500px',
+              data: {
+                title: 'Contraseña Restablecida',
+                message: 'La contraseña del usuario ha sido reiniciada correctamente.',
+                icon: 'lock_reset',
+
+                username: response.data.username,
+                temporaryPassword: response.data.temporaryPassword,
+                workspaceUrl: null
+              }
+            });
+
+          } else {
+          }
+        });
+      }
+    });
+  }
 }

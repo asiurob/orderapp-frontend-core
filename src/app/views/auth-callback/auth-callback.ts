@@ -22,7 +22,6 @@ export class AuthCallback implements OnInit {
     });
 
     this.auth.isAuthenticated$.subscribe((isAuth) => {
-      console.log('isAuth', isAuth);
       if (isAuth) {
         this.router.navigateByUrl('/app/customers');
       }

@@ -70,28 +70,35 @@
   }
 
   .mat-mdc-icon-button {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
+
     .mat-icon {
-      font-size: 20px;
+      font-size: 24px; 
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
     }
   }
 }
+
 mat-progress-bar {
   height: 6px !important;
   border-radius: 3px;
   margin-bottom: 4px;
-  --mdc-linear-progress-track-color: var(--health-bar-bg); 
-  --mdc-linear-progress-active-indicator-color: transparent !important; 
+  --mdc-linear-progress-track-color: var(--health-bar-bg);
+  --mdc-linear-progress-active-indicator-color: transparent !important;
 
   &.progress-high {
-      --mdc-linear-progress-active-indicator-color: var(--success) !important; // Verde
+    --mdc-linear-progress-active-indicator-color: var(--success) !important; // Verde
   }
+
   &.progress-medium {
-      --mdc-linear-progress-active-indicator-color: var(--warning) !important; // Amarillo/Ámbar
+    --mdc-linear-progress-active-indicator-color: var(--warning) !important; // Amarillo/Ámbar
   }
+
   &.progress-low {
-      --mdc-linear-progress-active-indicator-color: var(--warn) !important; // Rojo
+    --mdc-linear-progress-active-indicator-color: var(--warn) !important; // Rojo
   }
 }
 
@@ -105,50 +112,65 @@ mat-progress-bar {
   mat-chip-option {
     &.mat-mdc-chip {
       --mdc-chip-outline-width: 0px;
-      background-color: transparent !important; 
+      background-color: transparent !important;
     }
 
-    .mat-mdc-chip-avatar, 
-    .mat-icon, 
+    .mat-mdc-chip-avatar,
+    .mat-icon,
     .mdc-evolution-chip__icon--primary {
       display: none !important;
     }
 
     .mdc-evolution-chip__action {
-        background-color: transparent !important; 
-        .mdc-evolution-chip__text-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-    }
+      background-color: transparent !important;
 
-    &.mat-primary { 
-      background-color: var(--success-container) !important; 
-      .mdc-evolution-chip__action .mdc-evolution-chip__text-label {
-        color: var(--status-active-color) !important; 
+      .mdc-evolution-chip__text-label {
+        font-size: 0.75rem;
+        font-weight: 600;
       }
     }
 
-    &.mat-warn { 
+    &.mat-primary {
+      background-color: var(--success-container) !important;
+
+      .mdc-evolution-chip__action .mdc-evolution-chip__text-label {
+        color: var(--status-active-color) !important;
+      }
+    }
+
+    &.mat-warn {
       background-color: var(--warn-container) !important;
+
       .mdc-evolution-chip__action .mdc-evolution-chip__text-label {
-        color: var(--status-hot-color) !important; 
+        color: var(--status-hot-color) !important;
       }
     }
 
-    &.mat-accent { 
-      background-color: var(--info-container) !important; 
+    &.mat-accent {
+      background-color: var(--info-container) !important;
+
       .mdc-evolution-chip__action .mdc-evolution-chip__text-label {
-        color: var(--info) !important; 
+        color: var(--info) !important;
       }
     }
   }
 }
 
 .action-cell {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  display: table-cell !important;
+  vertical-align: middle !important;
+  text-align: right !important;
+  padding-right: 16px !important;
+
+  button[mat-icon-button] {
+    margin-left: 12px;
+  }
+}
+
+.mat-mdc-cell:has(.action-cell) {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  vertical-align: middle;
 }
 
 .status-indicator {
