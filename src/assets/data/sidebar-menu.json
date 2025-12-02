@@ -7,14 +7,8 @@
   },
   {
     "id": "plan",
-    "label": "Plan",
+    "label": "Planes de pago",
     "icon": "insights",
     "routerLink": "plans"
-  },
-  {
-    "id": "registered_clients",
-    "label": "Api Docs",
-    "icon": "how_to_reg",
-    "routerLink": "api-docs"
   }
 ]

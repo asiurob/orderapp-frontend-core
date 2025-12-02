@@ -11,6 +11,7 @@ import { setContext } from '@apollo/client/link/context';
 import { firstValueFrom } from 'rxjs';
 
 import { routes } from './app.routes';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
 providers: [
@@ -19,14 +20,14 @@ providers: [
     provideHttpClient(),
     provideRouter(routes),
     provideAuth0({
-      domain: 'siurob.auth0.com',
-      clientId: 's6PIKbsa8jRdIgTnhQvsVrUr0asa2wTF',
+      domain: environment.auth0.domain,
+      clientId: environment.auth0.clientId,
       authorizationParams: {
         redirect_uri: `${window.location.origin}/auth/callback`,
-        audience: 'http://localhost:4000/graphql'
+        audience: environment.auth0.audience
       },
       httpInterceptor: {
-        allowedList: ['http://localhost:4000/graphql']
+        allowedList: [environment.apiUrl]
       }
     }),
     provideApollo(() => {
@@ -46,7 +47,7 @@ providers: [
           // Obtener el token de Auth0 (getAccessTokenSilently devuelve un Observable)
           const tokenObservable = authService.getAccessTokenSilently({
             authorizationParams: {
-              audience: 'http://localhost:4000/graphql'
+              audience: environment.auth0.audience
             }
           });
           
@@ -71,7 +72,7 @@ providers: [
       return {
         cache: new InMemoryCache(),
         link: authLink.concat(httpLink.create({
-          uri: 'http://localhost:4000/graphql',
+          uri: environment.apiUrl,
         })),
       };
     }),

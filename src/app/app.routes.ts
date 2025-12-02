@@ -20,10 +20,6 @@ export const routes: Routes = [{
         pathMatch: 'full'
       },
       {
-        path: 'api-docs',
-        loadComponent: () => import('./views/api-docs/api-docs').then(m => m.ApiDocs)
-      },
-      {
         path: 'plans',
         loadComponent: () =>
           import('./views/dashboard/pages/plans/plans').then(m => m.Plans)

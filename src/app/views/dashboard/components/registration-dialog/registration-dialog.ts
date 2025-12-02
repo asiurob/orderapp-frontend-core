@@ -144,12 +144,8 @@ export class RegistrationDialog implements OnInit {
       phone: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       email: ['', [Validators.required, Validators.email]],
       rfc: ['', Validators.required],
+      status: ['PENDING', Validators.required],
       customerType: ['PERSONA_FISICA', Validators.required],
-      bankAccount: this.fb.control('', {
-        validators: [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(18)],
-        updateOn: 'blur'
-      }),
-      bankInstitution: ['', Validators.required],
       legalRepresentativeFirstName: ['', Validators.required],
       legalRepresentativeLastName: ['', Validators.required],
       legalRepresentativeSecondLastName: ['', Validators.required],
