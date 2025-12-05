@@ -57,3 +57,57 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Recent Changes
+
+### Client and Restaurant Registration System
+
+#### New Features
+- **Registration Dialog**: Complete multi-step form for creating and editing legal customers and restaurants
+  - Step 1: General data (legal representative, contact info, status, plan, logo)
+  - Step 2: Restaurant data (commercial name, branch, address)
+  - Step 3: Documents (optional file uploads)
+- **Logo Upload**: Direct upload to Google Cloud Storage via Signed URLs
+- **Location Autocomplete**: Automatic state/municipality/neighborhood selection based on postal code
+- **Edit Mode**: Smart change detection - only updates modified fields
+- **Responsive Design**: Full Bootstrap 5 integration for mobile, tablet, and desktop
+
+#### Technical Implementation
+- **Angular 20 Signals**: Reactive state management using `signal()`, `computed()`, and `effect()`
+- **Service Layer**: Centralized GraphQL calls in `RegistrationDialogService`
+- **File Upload Service**: Generic `GcsUploadService` for uploading files to GCS
+- **Observable Management**: All observables use `takeUntilDestroyed` to prevent memory leaks
+- **RxJS Operators**: Chained operations for sequential upload → create → create flow
+
+#### Components Structure
+```
+registration-dialog/
+├── registration-dialog.ts (main component)
+├── registration-dialog.service.ts (GraphQL service)
+└── steps/
+    ├── client-data-step.component.ts
+    ├── restaurant-data-step.component.ts
+    └── documents-step.component.ts
+```
+
+#### GraphQL Mutations/Queries
+- `getClientLogoUploadConfig`: Get signed URL for logo upload
+- `createLegalCustomer`: Create new legal customer
+- `updateLegalCustomer`: Partial update of legal customer
+- `createRestaurant`: Create restaurant with bootstrap (creates OWNER user)
+- `updateRestaurantLocationByCore`: Update only restaurant location (Auth0)
+
+### UI/UX Improvements
+- **Header**: Logo from GCS, user name in CapitalCase, simplified logout button
+- **Responsive Layout**: Bootstrap grid system for all pages
+- **Search Bar**: Moved outside header, 1/3 width on desktop
+- **Button Sizing**: Optimized for different breakpoints
+- **Login Page**: Enhanced with logo, white background, elevation, and hover animations
+
+### Code Quality
+- All `console.log`/`console.error` removed from production code
+- JSDOC documentation added to all service methods
+- Unused imports removed
+- Observable subscriptions properly managed with `takeUntilDestroyed`
+
+For detailed technical context, see [CONTEXT.md](./CONTEXT.md).

@@ -9,8 +9,6 @@ export class OnboardingService {
 
   //TODO: método enviaría todos los datos a la API.
   submitOnboardingForm(formData: any): void {
-    console.log('--- ENVIANDO FORMULARIO COMPLETO ---');
-    console.log(formData);
-
+    // TODO: Implementar envío de formulario a la API
   }
 }

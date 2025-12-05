@@ -65,8 +65,6 @@ export class Plans {
       this.plansService.getPlanDetails(plan.id).subscribe(response => {
           if (response.success) {
             this._openDialog({ plan: response.data, isViewOnly: true });
-          } else {
-            console.error("Error al cargar detalles para ver:", response.message);
           }
         });
     }

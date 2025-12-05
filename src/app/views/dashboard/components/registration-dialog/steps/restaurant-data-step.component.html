@@ -1,0 +1,111 @@
+<div class="step-content" [formGroup]="formGroup">
+  <!-- Información del Restaurante -->
+  <div class="section-container">
+    <h5 class="section-title mb-3">Información del Restaurante</h5>
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Nombre Comercial</mat-label>
+          <input matInput formControlName="commercialName" autocomplete="new-password">
+          <mat-error>Requerido</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Nombre Sucursal</mat-label>
+          <input matInput formControlName="branch" autocomplete="new-password">
+          <mat-error>Requerido</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dirección de la Sucursal -->
+  <div class="section-container">
+    <h5 class="section-title mb-3">Dirección de la Sucursal</h5>
+    <div class="row g-3">
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Código Postal</mat-label>
+          <input 
+            matInput 
+            formControlName="postalCode"
+            #postalCodeInput
+            maxlength="5" 
+            autocomplete="new-password">
+          <mat-hint>Si lo sabes, llénalo primero</mat-hint>
+          @if (formGroup.get('postalCode')?.hasError('pattern')) {
+            <mat-error>
+              Debe ser numérico de 5 dígitos
+            </mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="state" (selectionChange)="onStateChange($event)">
+            @for (option of stateOptions$ | async; track option.id) {
+              <mat-option [value]="option.id">
+                {{ option.name || option.value }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-error>Requerido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Municipio / Alcaldía</mat-label>
+          <mat-select formControlName="municipality" (selectionChange)="onMunicipalityChange($event)">
+            @for (option of municipalityOptions$ | async; track option.id) {
+              <mat-option [value]="option.id">
+                {{ option.name || option.value }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-error>Requerido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Colonia</mat-label>
+          <mat-select formControlName="neighborhood" (selectionChange)="onNeighborhoodChange($event)">
+            @for (option of neighborhoodOptions$ | async; track option.id) {
+              <mat-option [value]="option.id">
+                {{ option.name || option.value }}
+              </mat-option>
+            }
+          </mat-select>
+          <mat-error>Requerido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-8">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Calle</mat-label>
+          <input matInput formControlName="street" autocomplete="new-password">
+          <mat-error>Requerido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label># Exterior</mat-label>
+          <input matInput formControlName="exteriorNumber" autocomplete="new-password">
+          <mat-error>Requerido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label># Interior (Opcional)</mat-label>
+          <input matInput formControlName="interiorNumber" autocomplete="new-password">
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+</div>

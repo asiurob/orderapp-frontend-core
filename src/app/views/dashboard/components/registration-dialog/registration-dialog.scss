@@ -1,40 +1,92 @@
 @use '@angular/material' as mat;
 
 :host ::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
-  width: 90vw !important; 
+  width: 95vw !important; 
   max-width: 1400px !important; 
-  height: 85vh !important;
+  height: 90vh !important;
   border-radius: 12px !important;
   padding: 0 !important; 
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden;
+  
+  @media (min-width: 768px) {
+    width: 90vw !important;
+    height: 85vh !important;
+  }
+  
+  @media (min-width: 992px) {
+    width: 85vw !important;
+  }
 }
 
 mat-dialog-content {
-  padding: 1.5rem; 
+  padding: 1rem; 
   flex-grow: 1;
   overflow-y: auto;
+  
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+  }
 }
 
 h2[mat-dialog-title] {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
   background-color: #fafafa;
   border-bottom: 1px solid var(--outline-variant);
+  
+  @media (min-width: 768px) {
+    padding: 1.25rem 1.5rem;
+    font-size: 1.25rem;
+  }
 }
 
 mat-dialog-actions {
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
   border-top: 1px solid var(--outline-variant);
   background-color: #fafafa;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  
+  @media (min-width: 768px) {
+    padding: 1rem 1.5rem;
+  }
+  
+  button {
+    flex: 1 1 auto;
+    min-width: 120px;
+    
+    @media (min-width: 576px) {
+      flex: 0 1 auto;
+    }
+  }
 }
 
 mat-form-field {
     width: 100%;
     margin-bottom: 0.75rem;
+}
+
+.progress-container {
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 0;
+}
+
+.step-indicator {
+  display: block;
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  font-weight: 500;
+}
+
+.button-spinner {
+  display: inline-block;
+  margin-right: 0.5rem;
 }
 
 .stepper-actions {

@@ -49,14 +49,23 @@ const GET_ALL_LEGAL_CUSTOMERS = gql `
   }
 `;
 
-// Para el Lápiz (Editar Step 1)
+// Para el Lápiz (Editar - solo campos necesarios)
 const GET_LEGAL_CUSTOMER_BY_ID = gql `
   query GetLegalCustomer($id: ID!) { 
     getLegalCustomer(id: $id) { 
       success message data { 
-        id fullName rfc customerType status email phone 
-        legalRepresentativeFirstName legalRepresentativeLastName 
-        legalRepresentativeSecondLastName bankAccount bankInstitution fiscalIdCard
+        id 
+        fullName 
+        rfc 
+        customerType 
+        status 
+        email 
+        phone 
+        legalRepresentativeFirstName 
+        legalRepresentativeLastName 
+        legalRepresentativeSecondLastName 
+        fiscalIdCard
+        logo
       } errors 
     } 
   }
@@ -153,21 +162,22 @@ const GET_RESTAURANTS_BY_LEGAL_CUSTOMER = gql `
         id
         commercialName
         branch
-        workspaceSlug
         street
         exteriorNumber
         interiorNumber
-        status
-        notes
         stateId
-        state { id name }
         municipalityId
-        municipality { id name }
         neighborhoodId
-        neighborhood { id name }
-        postalCodeId
-        postalCode { id code }
-        plan { id planName }
+        neighborhood {
+          postalCode {
+            id
+            code
+          }
+        }
+        plan {
+          id
+        }
+        logo
       }
       errors
     }
@@ -319,7 +329,6 @@ export class RegisteredClientsService {
       }),
       catchError((err) => {
         this.notification.error('Error de red al cargar detalles.');
-        console.error(err);
         return of(undefined);
       })
     );
@@ -336,7 +345,6 @@ export class RegisteredClientsService {
     }).pipe(
       map(result => result.data!.createLegalCustomer),
       catchError((err: any) => {
-        console.error("Error de Apollo en createLegalCustomer:", err);
         this.notification.error('Error de conexión. No se pudo guardar el cliente.');
         return of({
           success: false,
@@ -360,7 +368,6 @@ export class RegisteredClientsService {
     }).pipe(
       map(result => result.data!.updateLegalCustomer),
       catchError((err: any) => {
-        console.error("Error de Apollo en updateLegalCustomer:", err);
         this.notification.error('Error de conexión. No se pudo actualizar el cliente.');
         return of({
           success: false,
@@ -383,7 +390,6 @@ export class RegisteredClientsService {
     }).pipe(
       map(result => result.data!.createRestaurant),
       catchError((err: any) => {
-        console.error("Error de Apollo en createRestaurant:", err);
         this.notification.error('Error de conexión. No se pudo crear el restaurante.');
         return of({
           success: false,
@@ -406,7 +412,6 @@ export class RegisteredClientsService {
     }).pipe(
       map(result => (result.data.getAllStates.success ? result.data.getAllStates.data : [])),
       catchError((err: any) => {
-        console.error("Error de Apollo en getAllStates:", err);
         this.notification.error('Error al cargar la lista de estados.');
         return of([]);
       })
@@ -425,7 +430,6 @@ export class RegisteredClientsService {
     }).pipe(
       map(result => (result.data.getMunicipalitiesByState.success ? result.data.getMunicipalitiesByState.data : [])),
       catchError((err: any) => {
-        console.error("Error de Apollo en getMunicipalitiesByState:", err);
         this.notification.error('Error al cargar municipios.');
         return of([]);
       })
@@ -444,7 +448,6 @@ export class RegisteredClientsService {
     }).pipe(
       map(result => (result.data.getNeighborhoodsByMunicipality.success ? result.data.getNeighborhoodsByMunicipality.data : [])),
       catchError((err: any) => {
-        console.error("Error de Apollo en getNeighborhoodsByMunicipality:", err);
         this.notification.error('Error al cargar colonias.');
         return of([]);
       })
@@ -463,7 +466,6 @@ export class RegisteredClientsService {
     }).pipe(
       map(result => result.data.getLocationByPostalCode),
       catchError((err: any) => {
-        console.error("Error de Apollo en getLocationByPostalCode:", err);
         this.notification.error('Error de red buscando C.P.');
         return of({
           success: false,
@@ -487,7 +489,6 @@ export class RegisteredClientsService {
     }).pipe(
       map(result => (result.data.searchStates.success ? result.data.searchStates.data : [])),
       catchError((err: any) => {
-        console.error("Error de Apollo en searchStates:", err);
         this.notification.error('Error al buscar estados.');
         return of([]);
       })
@@ -506,7 +507,6 @@ export class RegisteredClientsService {
     }).pipe(
       map(result => result.data!.updateRestaurant),
       catchError((err: any) => {
-        console.error("Error de Apollo en updateRestaurant:", err);
         this.notification.error('Error de conexión. No se pudo actualizar el restaurante.');
         return of({
           success: false,
@@ -529,7 +529,6 @@ export class RegisteredClientsService {
     }).pipe(
       map(result => result.data!.resetPasswordByAdmin),
       catchError((err: any) => {
-        console.error("Error de Apollo en resetPassword:", err);
         this.notification.error('Error de conexión. No se pudo resetear la contraseña.');
         return of({
           success: false,

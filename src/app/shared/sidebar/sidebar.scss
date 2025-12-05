@@ -1,8 +1,17 @@
 .sidebar-container {
   background-color: #ffffff;
-  width: 260px;
+  width: 100%;
+  max-width: 260px;
   height: calc(100vh - 70px);
   border-right: 1px solid var(--mat-sys-outline-variant);
+  
+  @media (max-width: 767.98px) {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
 }
 
 a[mat-list-item] {

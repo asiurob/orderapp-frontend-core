@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, inject } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAuth0 } from '@auth0/auth0-angular';
 import { AuthService } from '@auth0/auth0-angular';
 
@@ -12,12 +12,15 @@ import { firstValueFrom } from 'rxjs';
 
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
+import { loaderInterceptor } from './shared/interceptors/loader.interceptor';
 
 export const appConfig: ApplicationConfig = {
 providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideHttpClient(),
+    provideHttpClient(
+      withInterceptors([loaderInterceptor])
+    ),
     provideRouter(routes),
     provideAuth0({
       domain: environment.auth0.domain,

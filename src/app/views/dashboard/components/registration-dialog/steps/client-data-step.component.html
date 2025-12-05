@@ -1,0 +1,161 @@
+<div class="step-content" [formGroup]="formGroup">
+  <!-- Tipo de Persona (Al inicio) -->
+  <div class="section-container">
+    <div class="row">
+      <div class="col-12">
+        <label class="form-label fw-semibold mb-3">Tipo de Persona</label>
+        <mat-radio-group formControlName="customerType" class="d-flex gap-4">
+          <mat-radio-button value="PERSONA_FISICA">Persona Física</mat-radio-button>
+          <mat-radio-button value="PERSONA_MORAL">Persona Moral</mat-radio-button>
+        </mat-radio-group>
+      </div>
+    </div>
+  </div>
+
+  <!-- Información del representante legal -->
+  <div class="section-container">
+    <h5 class="section-title mb-3">
+      Información del representante legal
+    </h5>
+
+    <div class="row g-3">
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nombre(s)</mat-label>
+          <input matInput formControlName="legalRepresentativeFirstName" autocomplete="new-password">
+          <mat-error>Este campo es requerido.</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Apellido Paterno</mat-label>
+          <input matInput formControlName="legalRepresentativeLastName" autocomplete="new-password">
+          <mat-error>Este campo es requerido.</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Apellido Materno</mat-label>
+          <input matInput formControlName="legalRepresentativeSecondLastName" autocomplete="new-password">
+          <mat-error>Este campo es requerido.</mat-error>
+        </mat-form-field>
+      </div>
+
+      @if (personType() === 'PERSONA_MORAL') {
+        <div class="col-12 col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Cédula de Identificación Fiscal</mat-label>
+            <input matInput formControlName="fiscalIdCard" autocomplete="new-password">
+            <mat-error>Requerido para Persona Moral.</mat-error>
+          </mat-form-field>
+        </div>
+      }
+
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>RFC</mat-label>
+          <input matInput formControlName="rfc" autocomplete="new-password">
+          <mat-error>Este campo es requerido.</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Teléfono de contacto</mat-label>
+          <input matInput formControlName="phone" type="tel" autocomplete="new-password">
+          @if (formGroup.get('phone')?.hasError('required')) {
+            <mat-error>Este campo es requerido.</mat-error>
+          }
+          @if (formGroup.get('phone')?.hasError('pattern')) {
+            <mat-error>¡Solo se permiten números!</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="new-password">
+          <mat-error>Correo inválido o requerido.</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado, Plan y Logo -->
+  <div class="section-container">
+    <h5 class="section-title mb-3">Información adicional</h5>
+
+    <div class="row g-3">
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="PENDING">Pendiente</mat-option>
+            <mat-option value="ACTIVE">Activo</mat-option>
+            <mat-option value="SUSPENDED">Suspendido</mat-option>
+            <mat-option value="REJECTED">Rechazado</mat-option>
+            <mat-option value="INACTIVE">Inactivo</mat-option>
+          </mat-select>
+          <mat-error>Este campo es requerido.</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Plan Contratado</mat-label>
+          <mat-select formControlName="planId">
+            @for (plan of planOptions$ | async; track plan.id) {
+              <mat-option [value]="plan.id">{{ plan.name }}</mat-option>
+            }
+          </mat-select>
+          <mat-error>Requerido</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="logo-card">
+          <div class="logo-card-header">
+            <mat-icon class="logo-icon">image</mat-icon>
+            <div>
+              <h6 class="logo-title mb-0">Logo del Cliente</h6>
+              <small class="text-muted">Opcional</small>
+            </div>
+          </div>
+          <div class="logo-card-content">
+            @if (logoPreview) {
+              <div class="logo-preview">
+                <img [src]="logoPreview" alt="Logo preview" class="logo-image">
+                <button 
+                  type="button" 
+                  mat-icon-button 
+                  color="warn" 
+                  class="logo-delete-btn"
+                  (click)="onRemoveLogo()"
+                  [disabled]="isUploadingLogo">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            } @else {
+              <div class="logo-upload-area">
+                <input 
+                  type="file" 
+                  id="logoInput" 
+                  accept="image/jpeg,image/png,image/webp" 
+                  (change)="onFileSelected($event)"
+                  [disabled]="isUploadingLogo"
+                  hidden>
+                <label for="logoInput" class="upload-label">
+                  @if (isUploadingLogo) {
+                    <mat-spinner diameter="24"></mat-spinner>
+                    <span>Subiendo...</span>
+                  } @else {
+                    <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                    <span class="upload-text">Haz clic para subir logo</span>
+                    <small class="upload-hint">JPG, PNG o WebP (máx. 5MB)</small>
+                  }
+                </label>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

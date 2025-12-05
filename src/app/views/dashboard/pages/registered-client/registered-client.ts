@@ -126,7 +126,7 @@ export class RegisteredClient implements AfterViewInit {
       maxWidth: '1400px',
       height: '85vh',
       maxHeight: '85vh',
-      disableClose: true,
+      disableClose: false,
       data: null
     });
 
@@ -142,7 +142,6 @@ export class RegisteredClient implements AfterViewInit {
       .subscribe({
         next: (clientDetails: IRegisteredClientDetails | undefined) => {
           if (!clientDetails) {
-            console.error(`Detalles no encontrados para el cliente con ID: ${clientSummary.id}`);
             this.notification.error(`Error: No se pudieron cargar los detalles para ${clientSummary.fullName}.`);
             return;
           }
@@ -153,7 +152,7 @@ export class RegisteredClient implements AfterViewInit {
             maxWidth: '1400px',
             height: '85vh',
             maxHeight: '85vh',
-            disableClose: true,
+            disableClose: false,
             data: clientDetails
           });
 
@@ -164,7 +163,6 @@ export class RegisteredClient implements AfterViewInit {
           });
         },
         error: (err) => {
-          console.error('Error al obtener detalles del cliente:', err);
           this.notification.error(`Error al cargar los detalles para ${clientSummary.fullName}. Intenta de nuevo.`);
         }
       });

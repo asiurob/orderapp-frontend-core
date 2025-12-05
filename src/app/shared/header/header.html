@@ -1,17 +1,17 @@
 <mat-toolbar class="app-header shadow-sm">
-  <div class="d-flex justify-content-between align-items-center w-100">
+  <div class="d-flex justify-content-between align-items-center w-100 flex-wrap flex-md-nowrap">
 
-    <div class="header-left d-flex align-items-center gap-3">
+    <div class="header-left d-flex align-items-center gap-2 gap-md-3">
       <div class="logo">
-        <mat-icon>domain</mat-icon>
+        <img src="https://storage.googleapis.com/orderapp-public-assets/clients/logos/69326034fbb4c6e0d61ed704/1764909108472.png" alt="Orderapp Logo" class="logo-image">
       </div>
-      <div>
+      <div class="d-none d-sm-block">
         <h1 class="app-title mb-0"><b>Orderapp</b> Admin</h1>
-        <div class="app-subtitle">Suite de Gestión de Clientes</div>
+        <div class="app-subtitle d-none d-md-block">Suite de Gestión de Clientes</div>
       </div>
     </div>
 
-    <div class="header-right d-flex align-items-center gap-4">
+    <div class="header-right d-flex align-items-center gap-2 gap-md-4">
       <!-- Indica sistema activo o inactivo
       <div 
         class="status-indicator d-flex align-items-center gap-2 px-3 py-1"
@@ -40,23 +40,17 @@
         </mat-icon>
       </button>
 -->
-      <button mat-button [matMenuTriggerFor]="userMenu" class="user-profile d-flex align-items-center gap-2">
-        <mat-icon>account_circle</mat-icon>
-        <span>Admin</span>
-        <mat-icon>expand_more</mat-icon>
-      </button>
-
-      <mat-menu #userMenu="matMenu" panelClass="app-user-menu">
-        <button mat-menu-item *ngFor="let item of userMenuItems">
-          <mat-icon>{{ item.icon }}</mat-icon>
-          <span>{{ item.label }}</span>
-        </button>
-
-        <mat-divider></mat-divider> <button mat-menu-item (click)="logout()">
+      <div class="d-flex align-items-center gap-2">
+        <span class="user-name">{{ userName() }}</span>
+        <button 
+          mat-icon-button 
+          class="logout-btn"
+          (click)="logout()" 
+          aria-label="Cerrar sesión"
+          matTooltip="Cerrar sesión">
           <mat-icon>logout</mat-icon>
-          <span>Cerrar Sesión</span>
         </button>
-      </mat-menu>
+      </div>
 
     </div>
   </div>

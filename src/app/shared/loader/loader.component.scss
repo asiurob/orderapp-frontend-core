@@ -1,0 +1,13 @@
+.loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000; // Muy alto para quedar por encima de diálogos (Material Dialog usa z-index ~1000)
+  width: 100%;
+  pointer-events: none; // Permite hacer click a través del loader
+
+  mat-progress-bar {
+    height: 3px;
+  }
+}

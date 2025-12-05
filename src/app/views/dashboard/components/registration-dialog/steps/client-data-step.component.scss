@@ -1,0 +1,133 @@
+.step-content {
+  padding: 1rem 0;
+}
+
+.section-container {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.help-icon {
+  color: #6c757d;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  cursor: help;
+}
+
+// Logo Card
+.logo-card {
+  background: linear-gradient(135deg, #fff8f5 0%, #ffeee1 100%);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 2px dashed #ffb870;
+  transition: all 0.3s ease;
+  height: 100%;
+  
+  &:hover {
+    border-color: var(--mat-sys-inverse-primary);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+  }
+}
+
+.logo-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  
+  .logo-icon {
+    color: var(--mat-sys-inverse-primary);
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+  
+  .logo-title {
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+.logo-card-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;
+}
+
+.logo-preview {
+  position: relative;
+  display: inline-block;
+  
+  .logo-image {
+    max-width: 150px;
+    max-height: 120px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .logo-delete-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.logo-upload-area {
+  width: 100%;
+  
+  .upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2rem;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px dashed #ffb870;
+    
+    &:hover {
+      border-color: var(--mat-sys-inverse-primary);
+      background: #fff8f5;
+    }
+    
+    .upload-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: var(--mat-sys-inverse-primary);
+    }
+    
+    .upload-text {
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .upload-hint {
+      color: #6c757d;
+      font-size: 0.85rem;
+    }
+  }
+}

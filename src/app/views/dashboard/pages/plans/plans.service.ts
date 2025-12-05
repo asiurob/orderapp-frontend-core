@@ -125,8 +125,6 @@ export class PlansService {
     .subscribe(response => {
       if (response.success) {
         this._plans.set(response.data);
-      } else {
-        console.error('Error al cargar planes:', response.message);
       }
     });
   }
@@ -155,7 +153,6 @@ addPlan(planInput: IPlanInput) {
         }
       },
       error: (err) => {
-        console.error('Error crítico al crear plan:', err);
         this.notification.error('Error de conexión. Intenta de nuevo.');
       }
     });
@@ -179,7 +176,6 @@ addPlan(planInput: IPlanInput) {
         }
       },
       error: (err) => {
-        console.error('Error crítico al actualizar plan:', err);
         this.notification.error('Error de conexión. No se pudo actualizar.');
       }
     });
@@ -200,13 +196,12 @@ addPlan(planInput: IPlanInput) {
         }
       },
       error: (err) => {
-        console.error('Error crítico al eliminar plan:', err);
         this.notification.error('Error de conexión. No se pudo eliminar.');
       }
     });
   }
 
-  getPlansForSelect(): Observable<{ id: string, name: string, description: string }[]> {
+  getPlansForSelect(): Observable<{ id: string, name: string }[]> {
   return this.apollo.query< { getAllPlans: IGraphQLResponse<any[]> } >({
     query: GET_ALL_PLANS,
     fetchPolicy: 'cache-first'
@@ -214,11 +209,10 @@ addPlan(planInput: IPlanInput) {
     map(result => {
       if (result.data?.getAllPlans.success) {
         return result.data.getAllPlans.data
-          .filter(plan => plan.isActive && plan.isPublic)
+          .filter( plan => plan.isActive === true )
           .map(plan => ({
             id: plan.id,
-            name: plan.planName,
-            description: `Costo: $${plan.fixedCost} + ${plan.percentPerTransaction}% Tx` 
+            name: plan.planName
           }));
       }
 
@@ -226,7 +220,6 @@ addPlan(planInput: IPlanInput) {
       return []; 
     }),
     catchError((err) => {
-      console.error('Error crítico cargando planes para select:', err);
       this.notification.error('Error de red al cargar planes.');
       return of([]);
     })

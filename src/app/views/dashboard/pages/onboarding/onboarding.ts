@@ -118,7 +118,6 @@ export class Onboarding implements OnInit {
   onFileSelected(event: Event, docName: string): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
-      console.log(`Archivo para '${docName}':`, file.name);
       // TODO: Logica para subir archivos
     }
   }

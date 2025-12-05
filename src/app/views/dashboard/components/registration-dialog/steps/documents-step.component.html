@@ -1,0 +1,110 @@
+<div class="step-content">
+  <div class="documents-container">
+    <div class="info-banner">
+      <mat-icon>info</mat-icon>
+      <p>Los documentos son opcionales y pueden subirse más tarde desde el perfil del cliente.</p>
+    </div>
+
+    @if (personType === 'PERSONA_FISICA') {
+      <h4 class="documents-title">Documentos Requeridos (Persona Física)</h4>
+      <div class="documents-grid">
+        @for (doc of documents; track doc; let i = $index) {
+          <div class="document-card">
+            <div class="card-header">
+              <mat-icon class="doc-icon">description</mat-icon>
+              <div class="doc-title-wrapper">
+                <h5 class="doc-name">{{ getDocTitle(doc) }}</h5>
+                <small class="doc-subtitle">{{ getDocSubtitle(doc) }}</small>
+              </div>
+            </div>
+            <div class="card-content">
+              @if (hasFile(doc)) {
+                @if (getFileState(doc); as fileState) {
+                  <div class="file-uploaded">
+                    <mat-chip class="success-chip">
+                      <mat-icon>check_circle</mat-icon>
+                      <span>{{ fileState.file.name }}</span>
+                    </mat-chip>
+                    @if (fileState.uploadProgress < 100) {
+                      <mat-progress-bar 
+                        mode="determinate" 
+                        [value]="fileState.uploadProgress"
+                        class="mt-2">
+                      </mat-progress-bar>
+                    }
+                  </div>
+                }
+              } @else {
+                <button 
+                  type="button" 
+                  mat-stroked-button 
+                  class="upload-btn"
+                  (click)="triggerFileInput('fisica', i)">
+                  <mat-icon>upload_file</mat-icon>
+                  <span>Cargar Archivo</span>
+                </button>
+                <input 
+                  hidden 
+                  type="file" 
+                  #fileInputFisica
+                  (change)="onFileSelected($event, doc)"
+                  accept=".pdf,.jpg,.jpeg,.png">
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (personType === 'PERSONA_MORAL') {
+      <h4 class="documents-title">Documentos Requeridos (Persona Moral)</h4>
+      <div class="documents-grid">
+        @for (doc of documents; track doc; let i = $index) {
+          <div class="document-card">
+            <div class="card-header">
+              <mat-icon class="doc-icon">description</mat-icon>
+              <div class="doc-title-wrapper">
+                <h5 class="doc-name">{{ getDocTitle(doc) }}</h5>
+                <small class="doc-subtitle">{{ getDocSubtitle(doc) }}</small>
+              </div>
+            </div>
+            <div class="card-content">
+              @if (hasFile(doc)) {
+                @if (getFileState(doc); as fileState) {
+                  <div class="file-uploaded">
+                    <mat-chip class="success-chip">
+                      <mat-icon>check_circle</mat-icon>
+                      <span>{{ fileState.file.name }}</span>
+                    </mat-chip>
+                    @if (fileState.uploadProgress < 100) {
+                      <mat-progress-bar 
+                        mode="determinate" 
+                        [value]="fileState.uploadProgress"
+                        class="mt-2">
+                      </mat-progress-bar>
+                    }
+                  </div>
+                }
+              } @else {
+                <button 
+                  type="button" 
+                  mat-stroked-button 
+                  class="upload-btn"
+                  (click)="triggerFileInput('moral', i)">
+                  <mat-icon>upload_file</mat-icon>
+                  <span>Cargar Archivo</span>
+                </button>
+                <input 
+                  hidden 
+                  type="file" 
+                  #fileInputMoral
+                  (change)="onFileSelected($event, doc)"
+                  accept=".pdf,.jpg,.jpeg,.png">
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

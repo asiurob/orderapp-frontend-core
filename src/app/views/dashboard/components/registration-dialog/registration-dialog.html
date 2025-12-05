@@ -1,320 +1,94 @@
-<h2 mat-dialog-title>{{ isEditMode ? 'Editar Registro' : 'Registrar Nuevo Cliente' }}</h2>
+<h2 mat-dialog-title>
+  {{ dialogTitle() }}
+</h2>
 
 <mat-dialog-content class="dialog-content-wrapper">
+  <!-- Progress Bar -->
+  <div class="progress-container">
+    <mat-progress-bar 
+      mode="determinate" 
+      [value]="stepProgress()">
+    </mat-progress-bar>
+    <span class="step-indicator">
+      Paso {{ currentStep() + 1 }} de {{ totalSteps() }}
+    </span>
+  </div>
 
-  <mat-stepper linear #stepper>
+  <mat-stepper linear #stepper [selectedIndex]="currentStep()" (selectionChange)="onStepChange($event.selectedIndex)">
+    <!-- Step 1: Datos Generales -->
     <mat-step [stepControl]="step1Group">
-      <form [formGroup]="step1Group">
-        <ng-template matStepLabel>Datos Generales del Cliente</ng-template>
-
-        <div class="row mt-3">
-          <div class="col-12">
-            <label class="form-label d-block mb-2">Tipo de Persona</label>
-            <mat-radio-group formControlName="customerType">
-              <mat-radio-button value="PERSONA_FISICA">Persona Física</mat-radio-button>
-              <mat-radio-button value="PERSONA_MORAL" class="ms-4">Persona Moral</mat-radio-button>
-            </mat-radio-group>
-          </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>{{ personType() === 'PERSONA_MORAL' ? 'Razón Social' : 'Nombre Completo' }}</mat-label>
-              <input matInput formControlName="fullName">
-              <mat-error>Este campo es requerido.</mat-error>
-            </mat-form-field>
-          </div>
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Teléfono de contacto</mat-label>
-
-              <input matInput formControlName="phone" type="tel">
-
-              <mat-error *ngIf="step1Group.get('phone')?.hasError('required')">Este campo es requerido.</mat-error>
-              <mat-error *ngIf="step1Group.get('phone')?.hasError('pattern')">¡Solo se permiten números!</mat-error>
-            </mat-form-field>
-          </div>
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Correo electrónico</mat-label>
-              <input matInput type="email" formControlName="email">
-              <mat-error>Correo inválido o requerido.</mat-error>
-            </mat-form-field>
-          </div>
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>RFC</mat-label>
-              <input matInput formControlName="rfc">
-              <mat-error>Este campo es requerido.</mat-error>
-            </mat-form-field>
-          </div>
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Estado</mat-label>
-              <mat-select formControlName="status">
-                <mat-option value="PENDING">Pendiente</mat-option>
-                <mat-option value="ACTIVE">Activo</mat-option>
-                <mat-option value="SUSPENDED">Suspendido</mat-option>
-                <mat-option value="REJECTED">Rechazado</mat-option>
-                <mat-option value="INACTIVE">Inactivo</mat-option>
-              </mat-select>
-              <mat-error>Este campo es requerido.</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-12 mt-3">
-            <h5 class="section-title d-flex align-items-center gap-2">
-              <span>
-                Datos del Representante Legal
-              </span>
-
-              <mat-icon *ngIf="personType() === 'PERSONA_FISICA'" class="help-icon"
-                [matTooltip]="'Al ser Persona Física, el sistema requiere tus datos personales. Si no cuentas con un Representante Legal, por favor ingresa tu propio nombre en estos campos.'">
-                help_outline
-              </mat-icon>
-            </h5>
-          </div>
-
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Nombre(s) Rep. Legal</mat-label>
-              <input matInput formControlName="legalRepresentativeFirstName">
-              <mat-error>Este campo es requerido.</mat-error>
-            </mat-form-field>
-          </div>
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Apellido Paterno Rep. Legal</mat-label>
-              <input matInput formControlName="legalRepresentativeLastName">
-              <mat-error>Este campo es requerido.</mat-error>
-            </mat-form-field>
-          </div>
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Apellido Materno Rep. Legal</mat-label>
-              <input matInput formControlName="legalRepresentativeSecondLastName">
-              <mat-error>Este campo es requerido.</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-4" *ngIf="personType() === 'PERSONA_MORAL'">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Cédula de Identificación Fiscal</mat-label>
-              <input matInput formControlName="fiscalIdCard">
-              <mat-error>Requerido para Persona Moral.</mat-error>
-            </mat-form-field>
-          </div>
-        </div>
-
-        <div class="stepper-actions">
-          <button mat-flat-button color="primary" *ngIf="!isEditMode" matStepperNext>
-            Siguiente
-          </button>
-
-          <button mat-flat-button color="primary" *ngIf="isEditMode" (click)="handleStep1Next()"
-            [disabled]="isSavingStep1() || step1Group.invalid">
-            Guardar y Continuar
-          </button>
-        </div>
+      <ng-template matStepLabel>Datos Generales</ng-template>
+      <form [formGroup]="step1Group" autocomplete="off">
+        <app-client-data-step
+          [formGroup]="step1Group"
+          [isEditMode]="isEditMode()"
+          [logoFile]="logoFile()"
+          [logoPreview]="logoPreview() || logoUrl()"
+          [isUploadingLogo]="isUploadingLogo()"
+          [planOptions$]="planOptions$"
+          (logoSelected)="onLogoSelected($event)"
+          (logoRemoved)="onLogoRemoved()">
+        </app-client-data-step>
       </form>
     </mat-step>
 
+    <!-- Step 2: Restaurante Matriz -->
     <mat-step [stepControl]="step2Group">
-      <form [formGroup]="step2Group">
-        <ng-template matStepLabel>Datos del Restaurante</ng-template>
-
-        <div class="row mt-3 mx-0">
-          <div class="col-md-12">
-            <h5 class="section-title">Información del Plan y Restaurante</h5>
-          </div>
-
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label>Plan Contratado</mat-label>
-              <mat-select formControlName="planId">
-
-                <mat-option *ngFor="let plan of planOptions$ | async" [value]="plan.id">
-                  <div>{{ plan.name }}</div>
-                  <small classs="text-muted">{{ plan.description }}</small>
-                </mat-option>
-
-              </mat-select>
-              <mat-error>Requerido</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label>Nombre Comercial</mat-label>
-              <input matInput formControlName="commercialName">
-              <mat-error>Requerido</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label>Nombre Sucursal</mat-label>
-              <input matInput formControlName="branch">
-              <mat-error>Requerido</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-12 mt-3">
-            <h5 class="section-title">Dirección de la Sucursal</h5>
-          </div>
-
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label>Código Postal</mat-label> <input matInput formControlName="postalCode" #postalCodeInput
-                maxlength="5">
-              <mat-hint>Si lo sabes, llénalo primero</mat-hint>
-              <mat-error *ngIf="step2Group.get('postalCode')?.hasError('pattern')">Debe ser numérico de 5 dígitos
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label>Estado</mat-label>
-              <input type="text" matInput formControlName="state" [matAutocomplete]="autoState">
-
-              <mat-autocomplete #autoState="matAutocomplete" [displayWith]="displayLocation"
-                (optionSelected)="onStateSelected($event.option.value)">
-
-                <mat-option *ngFor="let option of stateOptions$ | async" [value]="option">
-                  {{ option.name || option.value }}
-                </mat-option>
-
-              </mat-autocomplete>
-              <mat-error>Requerido</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label>Municipio / Alcaldía</mat-label>
-              <input type="text" matInput formControlName="municipality" [matAutocomplete]="autoMun">
-              <mat-autocomplete #autoMun="matAutocomplete" [displayWith]="displayLocation"
-                (optionSelected)="onMunicipalitySelected($event.option.value)">
-                <mat-option *ngFor="let option of municipalityOptions$ | async" [value]="option">
-                  {{ option.name || option.value }}
-                </mat-option>
-              </mat-autocomplete>
-              <mat-error>Requerido</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label>Colonia</mat-label>
-              <input type="text" matInput formControlName="neighborhood" [matAutocomplete]="autoNeigh">
-              <mat-autocomplete #autoNeigh="matAutocomplete" [displayWith]="displayLocation"
-                (optionSelected)="onNeighborhoodSelected($event.option.value)">
-                <mat-option *ngFor="let option of neighborhoodOptions$ | async" [value]="option">
-                  {{ option.name || option.value }}
-                </mat-option>
-              </mat-autocomplete>
-              <mat-error>Requerido</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-8">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label>Calle</mat-label>
-              <input matInput formControlName="street">
-              <mat-error>Requerido</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label># Exterior</mat-label>
-              <input matInput formControlName="exteriorNumber">
-              <mat-error>Requerido</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-4">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label># Interior (Opcional)</mat-label>
-              <input matInput formControlName="interiorNumber">
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-8">
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <mat-label>Notas (Opcional)</mat-label>
-              <textarea matInput formControlName="notes" rows="2"></textarea>
-            </mat-form-field>
-          </div>
-
-        </div>
-
-        <div class="stepper-actions">
-          <button mat-button matStepperPrevious type="button">Anterior</button>
-          <button mat-flat-button color="primary" (click)="onStep2Next()" type="button" [disabled]="isSavingStep2()">
-            {{ isSavingStep2() ? 'Guardando...' : 'Siguiente' }}
-          </button>
-        </div>
+      <ng-template matStepLabel>Restaurante Matriz</ng-template>
+      <form [formGroup]="step2Group" autocomplete="off">
+        <app-restaurant-data-step
+          [formGroup]="step2Group"
+          [isEditMode]="isEditMode()"
+          [planOptions$]="planOptions$"
+          [stateOptions$]="stateOptions$"
+          [municipalityOptions$]="municipalityOptions$"
+          [neighborhoodOptions$]="neighborhoodOptions$"
+          (stateSelected)="onStateSelected($event)"
+          (municipalitySelected)="onMunicipalitySelected($event)"
+          (neighborhoodSelected)="onNeighborhoodSelected($event)">
+        </app-restaurant-data-step>
       </form>
     </mat-step>
 
+    <!-- Step 3: Documentos -->
     <mat-step [stepControl]="step3Group">
-      <form [formGroup]="step3Group">
-        <ng-template matStepLabel>Carga de Documentos</ng-template>
-
-        <div class="mt-3" *ngIf="personType() === 'PERSONA_FISICA'">
-          <h4>Documentos Requeridos (Persona Física)</h4>
-          <ul class="doc-list">
-            <li *ngFor="let doc of docsFisica; let i = index">
-              <span>{{ doc }}</span>
-              <button type="button" mat-stroked-button (click)="triggerFileInput('fisica', i)">
-                <mat-icon>upload_file</mat-icon> Cargar Archivo
-              </button>
-              <input hidden type="file" #fileInputFisica (change)="onFileSelected($event, doc)">
-            </li>
-          </ul>
-        </div>
-
-        <div class="mt-3" *ngIf="personType() === 'PERSONA_MORAL'">
-          <h4>Documentos Requeridos (Persona Moral)</h4>
-          <ul class="doc-list">
-            <li *ngFor="let doc of docsMoral; let i = index">
-              <span>{{ doc }}</span>
-              <button type="button" mat-stroked-button (click)="triggerFileInput('moral', i)">
-                <mat-icon>upload_file</mat-icon> Cargar Archivo
-              </button>
-              <input hidden type="file" #fileInputMoral (change)="onFileSelected($event, doc)">
-            </li>
-          </ul>
-        </div>
-
-        <div class="stepper-actions">
-          <button mat-button matStepperPrevious>Anterior</button>
-          <button mat-flat-button color="primary" matStepperNext>Siguiente</button>
-        </div>
+      <ng-template matStepLabel>Documentos</ng-template>
+      <form [formGroup]="step3Group" autocomplete="off">
+        <app-documents-step
+          [formGroup]="step3Group"
+          [personType]="personType()"
+          [uploadedFiles]="uploadedFiles()"
+          (fileSelected)="onFileSelected($event)">
+        </app-documents-step>
       </form>
-    </mat-step>
-
-    <mat-step>
-      <ng-template matStepLabel>FENICIA</ng-template>
-      <div class="placeholder-step">
-        <h3 class="placeholder-title">Configuración de FENICIA</h3>
-        <p class="text-muted">Esta sección se encuentra en desarrollo.</p>
-      </div>
-      <div class="stepper-actions">
-        <button mat-button matStepperPrevious>Anterior</button>
-      </div>
     </mat-step>
   </mat-stepper>
-
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-stroked-button (click)="onCancel()">Cancelar</button>
 
-  <button mat-flat-button color="primary" (click)="submitForm()"
-    [disabled]="!step1Group.valid || !step2Group.valid || ((stepper?.selectedIndex ?? 0) < 2)">
-    {{ isEditMode ? 'Guardar Cambios' : 'Finalizar Registro' }}
+  @if (!isFirstStep()) {
+    <button 
+      mat-button 
+      (click)="goToPreviousStep()" 
+      [disabled]="isSaving()">
+      Anterior
+    </button>
+  }
+
+  <button 
+    mat-flat-button 
+    color="primary" 
+    (click)="handleStepAction()"
+    [disabled]="!canGoNext() || isSaving()">
+    @if (isSaving()) {
+      <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+      <span class="ms-2">
+        {{ savingStep() !== null ? 'Guardando...' : 'Procesando...' }}
+      </span>
+    } @else {
+      {{ buttonLabel() }}
+    }
   </button>
 </mat-dialog-actions>
