@@ -66,6 +66,7 @@ const GET_LEGAL_CUSTOMER_BY_ID = gql `
         legalRepresentativeSecondLastName 
         fiscalIdCard
         logo
+        brandColor
       } errors 
     } 
   }

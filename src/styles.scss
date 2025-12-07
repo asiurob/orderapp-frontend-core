@@ -4,6 +4,56 @@
 @use './assets/assets_theme-colors' as theme;
 @use "bootstrap/scss/bootstrap";
 
+// ============================================================
+// NUCLEAR: DESHABILITAR AUTOCOMPLETE GLOBALMENTE
+// ============================================================
+// Estilos adicionales para reforzar la desactivación del autocomplete
+// (complementa la directiva DisableAutocompleteDirective)
+input,
+textarea,
+select {
+  autocomplete: off !important;
+  -webkit-autocomplete: off !important;
+  -moz-autocomplete: off !important;
+  
+  // Ocultar botones de autocompletado de navegadores
+  &::-webkit-contacts-auto-fill-button,
+  &::-webkit-credentials-auto-fill-button {
+    visibility: hidden !important;
+    display: none !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    right: 0 !important;
+    opacity: 0 !important;
+  }
+  
+  // Prevenir autofill visual
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: inherit !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+    background-color: transparent !important;
+  }
+}
+
+// Ocultar datalist completamente
+datalist {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+// Deshabilitar autocomplete en formularios
+form {
+  autocomplete: off !important;
+}
+
 html {
   @include mat.theme( 
     (

@@ -110,4 +110,24 @@ registration-dialog/
 - Unused imports removed
 - Observable subscriptions properly managed with `takeUntilDestroyed`
 
+### Branding Color Field (January 2025)
+
+#### New Feature
+- **Branding Color Selection**: Added `brandColor` field to the legal customer registration form
+  - Color picker with text input for hexadecimal code
+  - Default color: `#f79300` (orange)
+  - Bidirectional synchronization between color picker and text input
+  - Validation for hexadecimal format (#RRGGBB)
+
+#### Technical Implementation
+- Field added to `step1Group` in registration dialog
+- Included in GraphQL mutations (`createLegalCustomer`, `updateLegalCustomer`)
+- Responsive layout: 4-column width on desktop, full width on mobile
+- Reorganized "Additional Information" section to include Status, Plan, and Branding Color in one row
+
+#### Memory Leak Fixes
+- Fixed unclosed observables in `registration-dialog.ts`:
+  - `getMunicipalitiesByState()` and `getNeighborhoodsByMunicipality()` now use `takeUntilDestroyed(this.destroyRef)`
+  - Dialog `afterClosed()` subscription now uses `takeUntilDestroyed(this.destroyRef)`
+
 For detailed technical context, see [CONTEXT.md](./CONTEXT.md).

@@ -71,5 +71,19 @@ export class ClientDataStepComponent {
   onRemoveLogo(): void {
     this.logoRemoved.emit();
   }
+
+  onColorChange(event: Event, isColorInput: boolean): void {
+    const value = (event.target as HTMLInputElement).value;
+    
+    if (isColorInput) {
+      // Si cambió el color picker, actualizar el text input
+      this.formGroup.patchValue({ brandColor: value }, { emitEvent: false });
+    } else {
+      // Si cambió el text input, validar y actualizar el color picker
+      if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+        this.formGroup.patchValue({ brandColor: value }, { emitEvent: false });
+      }
+    }
+  }
 }
 

@@ -213,7 +213,8 @@ export class RegistrationDialog implements OnInit {
       legalRepresentativeSecondLastName: ['', Validators.required],
       fiscalIdCard: [''],
       planId: ['', Validators.required],
-      stateId: [null]
+      stateId: [null],
+      brandColor: ['#f79300'] // Color por defecto (naranja)
     });
 
     this.step2Group = this.fb.group({
@@ -246,6 +247,10 @@ export class RegistrationDialog implements OnInit {
   private loadEditData(): void {
     if (this.data?.clientData) {
       const clientData = { ...this.data.clientData };
+      // Asegurar que brandColor tenga un valor por defecto si no existe
+      if (!clientData.brandColor) {
+        clientData.brandColor = '#f79300';
+      }
       this.step1Group.patchValue(clientData);
       this.personType.set(this.step1Group.get('customerType')?.value || 'PERSONA_FISICA');
       
@@ -306,13 +311,17 @@ export class RegistrationDialog implements OnInit {
       // Cargar municipios si hay stateId
       if (r.stateId) {
         this.step2Group.get('municipality')?.enable();
-        this.registrationService.getMunicipalitiesByState(r.stateId).subscribe(munis => {
+        this.registrationService.getMunicipalitiesByState(r.stateId).pipe(
+          takeUntilDestroyed(this.destroyRef)
+        ).subscribe(munis => {
           this.municipalityListSource.next(munis);
           
           // Cargar colonias si hay municipalityId
           if (r.municipalityId) {
             this.step2Group.get('neighborhood')?.enable();
-            this.registrationService.getNeighborhoodsByMunicipality(r.municipalityId).subscribe(cols => {
+            this.registrationService.getNeighborhoodsByMunicipality(r.municipalityId).pipe(
+              takeUntilDestroyed(this.destroyRef)
+            ).subscribe(cols => {
               this.neighborhoodListSource.next(cols);
               
               // Ahora sí hacer patchValue cuando todas las listas estén cargadas
@@ -775,7 +784,9 @@ export class RegistrationDialog implements OnInit {
             }
           });
 
-          successDialogRef.afterClosed().subscribe(() => {
+          successDialogRef.afterClosed().pipe(
+            takeUntilDestroyed(this.destroyRef)
+          ).subscribe(() => {
             this.dialogRef.close(true);
           });
         } else {
@@ -842,7 +853,9 @@ export class RegistrationDialog implements OnInit {
       });
       this.step2Group.get('municipality')?.enable();
 
-      this.registrationService.getMunicipalitiesByState(stateId).subscribe(munis => {
+      this.registrationService.getMunicipalitiesByState(stateId).pipe(
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe(munis => {
         this.municipalityListSource.next(munis);
       });
     } else {
@@ -860,7 +873,9 @@ export class RegistrationDialog implements OnInit {
       });
       this.step2Group.get('neighborhood')?.enable();
 
-      this.registrationService.getNeighborhoodsByMunicipality(municipalityId).subscribe(colonias => {
+      this.registrationService.getNeighborhoodsByMunicipality(municipalityId).pipe(
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe(colonias => {
         this.neighborhoodListSource.next(colonias);
       });
     } else {

@@ -80,7 +80,7 @@
     </div>
   </div>
 
-  <!-- Estado, Plan y Logo -->
+  <!-- Información adicional: Estado, Plan y Color de branding -->
   <div class="section-container">
     <h5 class="section-title mb-3">Información adicional</h5>
 
@@ -110,6 +110,33 @@
         </mat-form-field>
       </div>
       <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Color de Branding</mat-label>
+          <div class="color-picker-wrapper">
+            <input 
+              type="color" 
+              formControlName="brandColor"
+              class="color-input"
+              (input)="onColorChange($event, true)">
+            <input 
+              matInput 
+              type="text" 
+              formControlName="brandColor"
+              placeholder="#f79300"
+              class="color-text-input"
+              maxlength="7"
+              (input)="onColorChange($event, false)">
+          </div>
+          <mat-hint>Selecciona el color principal de la marca</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logo del Cliente (en fila separada, centrado) -->
+  <div class="section-container">
+    <div class="row">
+      <div class="col-12 col-md-8 offset-md-2">
         <div class="logo-card">
           <div class="logo-card-header">
             <mat-icon class="logo-icon">image</mat-icon>
